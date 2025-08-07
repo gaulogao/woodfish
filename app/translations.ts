@@ -1,0 +1,366 @@
+export const translations = {
+  'en': {
+    common: {
+      confirm: 'Confirm',
+      cancel: 'Cancel',
+      warning: 'Warning',
+    },
+    tabs: {
+      recitation: 'Recitation',
+      statistics: 'Statistics',
+      settings: 'Settings',
+    },
+    index: {
+      title: 'Bead Counter',
+      resetButton: 'Reset',
+      countLabel: 'Count:',
+      totalLabel: 'Total:',
+      autoHitToggle: 'Auto',
+      frequencyLabel: 'Frequency:',
+    },
+    statistics: {
+      title: 'Statistics',
+      description: 'Your recitation statistics will be displayed here.',
+      dailyCounts: 'Daily Recitations',
+      monthlyStats: 'Monthly Statistics',
+      dataList: 'List',
+      calendarView: 'Calendar',
+      deleteConfirmationTitle: 'Delete Record',
+      deleteConfirmationMessage: 'Are you sure you want to delete this record?',
+    },
+    settings: {
+      title: 'Settings',
+      bgColorLabel: 'Background Color',
+      languageLabel: 'Language',
+      soundLabel: 'Sound Feedback',
+      hapticsLabel: 'Haptic Feedback',
+      resetButton: 'Reset All Settings',
+      resetConfirmationTitle: 'Confirm Reset',
+      resetConfirmationMessage: 'Are you sure you want to reset all settings?',
+      autoHitToggle: 'Auto Hit',
+      frequencyLabel: 'Auto Hit Frequency',
+      goalLabel: 'Recitation Goal',
+      themeLabel: 'Theme',
+      seconds: 's',
+      disarrayLabel: 'Pulse Counter',
+      showCounterLabel: 'Show Counter',
+      colors: {
+        beige: 'Beige',
+        black: 'Black',
+        red: 'Red',
+        yellow: 'Yellow',
+        blue: 'Blue',
+      },
+      languages: {
+        en: 'English',
+        zhCN: 'Simplified Chinese',
+        zhHK: 'Traditional Chinese (HK)',
+        ms: 'Malay',
+      },
+      musicLabel: 'Background Music',
+      music: {
+        dabeizhou: 'Great Compassion Mantra',
+        guanshiyin: 'Avalokitesvara Bodhisattva Heart Mantra',
+        heartSutra: 'Heart Sutra',
+        lotusSutra: 'Lotus Sutra',
+        namoAmitabha: 'Homage to Amitabha Buddha',
+        namoGuanyin: 'Homage to Avalokitesvara Bodhisattva',
+        namoKsitigarbha: 'Homage to Ksitigarbha Bodhisattva',
+        namoManjushri: 'Homage to Manjushri Bodhisattva',
+        namoSamantabhadra: 'Homage to Samantabhadra Bodhisattva',
+        namoMedicineBuddha: 'Homage to Medicine Buddha',
+        namoBhaisajyaguru: 'Homage to Medicine Master Lapis Lazuli Light Tathagata',
+
+      }
+    },
+    calendar: {
+      months: [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ],
+      monthShort: [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ],
+      dayNames: [
+        'Sunday', 'Monday', 'Tuesday', 'Wednesday',
+        'Thursday', 'Friday', 'Saturday'
+      ],
+      dayNamesShort: [
+        'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+      ],
+    }
+  },
+  'zh-CN': {
+    common: {
+      confirm: '确认',
+      cancel: '取消',
+      warning: '警告',
+    },
+    tabs: {
+      recitation: '念诵',
+      statistics: '统计',
+      settings: '设置',
+    },
+    index: {
+      title: '念珠计数器',
+      resetButton: '重置',
+      countLabel: '计数：',
+      totalLabel: '总计：',
+      autoHitToggle: '自动',
+      frequencyLabel: '频率：',
+    },
+    statistics: {
+      title: '统计数据',
+      description: '您的念诵统计将显示在这里。',
+      dailyCounts: '每日念诵次数',
+      monthlyStats: '按月统计',
+      dataList: '列表',
+      calendarView: '日历',
+      deleteConfirmationTitle: '删除记录',
+      deleteConfirmationMessage: '您确定要删除此记录吗？',
+    },
+    settings: {
+      title: '设置',
+      bgColorLabel: '背景颜色',
+      languageLabel: '语言',
+      soundLabel: '声音反馈',
+      hapticsLabel: '振动反馈',
+      resetButton: '重置所有设置',
+      resetConfirmationTitle: '确认重置',
+      resetConfirmationMessage: '您确定要重置所有设置吗？',
+      autoHitToggle: '自动念诵',
+      frequencyLabel: '自敲频率',
+      goalLabel: '念诵目标',
+      themeLabel: '主题',
+      seconds: '秒',
+      disarrayLabel: '脉动计数器',
+      showCounterLabel: '显示计数器',
+      colors: {
+        beige: '米色',
+        black: '黑色',
+        red: '红色',
+        yellow: '黄色',
+        blue: '蓝色',
+      },
+      languages: {
+        en: '英语',
+        zhCN: '简体中文',
+        zhHK: '繁體中文（香港）',
+        ms: '马来语',
+      },
+      musicLabel: '背景音乐',
+      music: {
+        dabeizhou: '大悲咒',
+        guanshiyin: '观音菩萨心咒',
+        heartSutra: '心经',
+        lotusSutra: '法华经',
+        namoAmitabha: '南无阿弥陀佛',
+        namoGuanyin: '南无观世音菩萨',
+        namoKsitigarbha: '南无地藏菩萨',
+        namoManjushri: '南无文殊菩萨',
+        namoSamantabhadra: '南无普贤菩萨',
+        namoMedicineBuddha: '南无药师佛',
+        namoBhaisajyaguru: '南无药师琉璃光如来',
+      }
+    },
+    calendar: {
+      months: [
+        '一月', '二月', '三月', '四月', '五月', '六月',
+        '七月', '八月', '九月', '十月', '十一月', '十二月'
+      ],
+      monthShort: [
+        '一月', '二月', '三月', '四月', '五月', '六月',
+        '七月', '八月', '九月', '十月', '十一月', '十二月'
+      ],
+      dayNames: [
+        '周日', '周一', '周二', '周三', '周四', '周五', '周六'
+      ],
+      dayNamesShort: [
+        '日', '一', '二', '三', '四', '五', '六'
+      ],
+    }
+  },
+  'zh-HK': {
+    common: {
+      confirm: '確認',
+      cancel: '取消',
+      warning: '警告',
+    },
+    tabs: {
+      recitation: '念誦',
+      statistics: '統計',
+      settings: '設定',
+    },
+    index: {
+      title: '念珠計數器',
+      resetButton: '重置',
+      countLabel: '計數：',
+      totalLabel: '總計：',
+      autoHitToggle: '自動',
+      frequencyLabel: '頻率：',
+    },
+    statistics: {
+      title: '統計數據',
+      description: '您的念誦統計將顯示在這裡。',
+      dailyCounts: '每日念誦次數',
+      monthlyStats: '按月統計',
+      dataList: '列表',
+      calendarView: '日曆',
+      deleteConfirmationTitle: '刪除記錄',
+      deleteConfirmationMessage: '您確定要刪除此記錄嗎？',
+    },
+    settings: {
+      title: '設定',
+      bgColorLabel: '背景顏色',
+      languageLabel: '語言',
+      soundLabel: '聲音回饋',
+      hapticsLabel: '震動回饋',
+      resetButton: '重置所有設定',
+      resetConfirmationTitle: '確認重置',
+      resetConfirmationMessage: '您確定要重設所有設定嗎？',
+      autoHitToggle: '自動念誦',
+      frequencyLabel: '自敲頻率',
+      goalLabel: '念誦目標',
+      themeLabel: '主題',
+      seconds: '秒',
+      disarrayLabel: '脈動計數器',
+      showCounterLabel: '顯示計數器',
+      colors: {
+        beige: '米色',
+        black: '黑色',
+        red: '紅色',
+        yellow: '黃色',
+        blue: '藍色',
+      },
+      languages: {
+        en: '英語',
+        zhCN: '簡體中文',
+        zhHK: '繁體中文（香港）',
+        ms: '馬來語',
+      },
+      musicLabel: '背景音樂',
+      music: {
+        dabeizhou: '大悲咒',
+        guanshiyin: '觀音菩薩心咒',
+        heartSutra: '心經',
+        lotusSutra: '法華經',
+        namoAmitabha: '南無阿彌陀佛',
+        namoGuanyin: '南無觀世音菩薩',
+        namoKsitigarbha: '南無地藏菩薩',
+        namoManjushri: '南無文殊菩薩',
+        namoSamantabhadra: '南無普賢菩薩',
+        namoMedicineBuddha: '南無藥師佛',
+        namoBhaisajyaguru: '南無藥師琉璃光如來',
+      }
+    },
+    calendar: {
+      months: [
+        '一月', '二月', '三月', '四月', '五月', '六月',
+        '七月', '八月', '九月', '十月', '十一月', '十二月'
+      ],
+      monthShort: [
+        '一月', '二月', '三月', '四月', '五月', '六月',
+        '七月', '八月', '九月', '十月', '十一月', '十二月'
+      ],
+      dayNames: [
+        '周日', '周一', '周二', '周三', '周四', '周五', '周六'
+      ],
+      dayNamesShort: [
+        '日', '一', '二', '三', '四', '五', '六'
+      ],
+    }
+  },
+  'ms': {
+    common: {
+      confirm: 'Sahkan',
+      cancel: 'Batal',
+      warning: 'Amaran',
+    },
+    tabs: {
+      recitation: 'Zikir',
+      statistics: 'Statistik',
+      settings: 'Tetapan',
+    },
+    index: {
+      title: 'Kaunter Manik',
+      resetButton: 'Tetapan Semula',
+      countLabel: 'Kira:',
+      totalLabel: 'Jumlah:',
+      autoHitToggle: 'Auto',
+      frequencyLabel: 'Frekuensi:',
+    },
+    statistics: {
+      title: 'Data Statistik',
+      description: 'Statistik zikir anda akan dipaparkan di sini.',
+      dailyCounts: 'Bilangan Zikir Harian',
+      monthlyStats: 'Statistik Bulanan',
+      dataList: 'Senarai',
+      calendarView: 'Kalendar',
+      deleteConfirmationTitle: 'Padam Rekod',
+      deleteConfirmationMessage: 'Anda pasti ingin memadam rekod ini?',
+    },
+    settings: {
+      title: 'Tetapan',
+      bgColorLabel: 'Warna Latar Belakang',
+      languageLabel: 'Bahasa',
+      soundLabel: 'Maklum Balas Bunyi',
+      hapticsLabel: 'Maklum Balas Haptik',
+      resetButton: 'Tetapkan semula semua tetapan',
+      resetConfirmationTitle: 'Sahkan Tetapan Semula',
+      resetConfirmationMessage: '"Adakah anda pasti mahu menetapkan semula semua tetapan?',
+      autoHitToggle: 'Kira Automatik',
+      frequencyLabel: 'Frekuensi Pengetukan Sendiri',
+      goalLabel: 'Matlamat Zikir',
+      themeLabel: 'Tema',
+      seconds: 'saat',
+      disarrayLabel: 'Kaunter Denyutan',
+      showCounterLabel: 'Tunjukkan Kaunter',
+      colors: {
+        beige: 'Beige',
+        black: 'Hitam',
+        red: 'Merah',
+        yellow: 'Kuning',
+        blue: 'Biru',
+      },
+      languages: {
+        en: 'Inggeris',
+        zhCN: 'Cina Ringkas',
+        zhHK: 'Cina Tradisional (HK)',
+        ms: 'Melayu',
+      },
+      musicLabel: 'Muzik Latar Belakang',
+      music: {
+        dabeizhou: 'Mantra Besar Kasih Sayang',
+        guanshiyin: 'Mantra Hati Avalokitesvara Bodhisattva',
+        heartSutra: 'Sutra Hati',
+        lotusSutra: 'Sutra Teratai',
+        namoAmitabha: 'Namo Amitabha',
+        namoGuanyin: 'Namo Guanyin',
+        namoKsitigarbha: 'Namo Ksitigarbha',
+        namoManjushri: 'Namo Manjushri',
+        namoSamantabhadra: 'Namo Samantabhadra',
+        namoMedicineBuddha: 'Namo Buddha Perubatan',
+      }
+    },
+    calendar: {
+      months: [
+        'Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun',
+        'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'
+      ],
+      monthShort: [
+        'Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun',
+        'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'
+      ],
+      dayNames: [
+        'Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'
+      ],
+      dayNamesShort: [
+        'Ahd', 'Isn', 'Sel', 'Rab', 'Kha', 'Jum', 'Sab'
+      ],
+    }
+  },
+};
+
+export type LanguageCode = keyof typeof translations;
+export type TranslationKeys = keyof typeof translations['en'];
