@@ -71,6 +71,7 @@ export default function Index() {
   const [neverStopEnabled, setNeverStopEnabled] = useState(true);
   const [stopDuration, setStopDuration] = useState(0);
   const [stopTimestamp, setStopTimestamp] = useState<number | null>(null);
+  const [countdownText, setCountdownText] = useState<string | null>(null);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
@@ -171,39 +172,85 @@ export default function Index() {
   }
 
   if (!neverStopEnabled && stopDuration > 0 && stopTimestamp === null) {
-    // Stop after duration
+  const timeout = setTimeout(() => {
+    setAutoHitEnabled(false);
+    setStopDuration(0);
+    setStopTimestamp(null);
+    if (isMusicPlaying) {
+      toggleMusic(); // This pauses music
+    }
+  }, stopDuration * 60 * 1000);
+
+  return () => clearTimeout(timeout);
+}
+
+if (!neverStopEnabled && stopDuration === 0 && stopTimestamp !== null) {
+  const now = Date.now();
+  const delay = stopTimestamp - now;
+
+  if (delay > 0) {
     const timeout = setTimeout(() => {
       setAutoHitEnabled(false);
+      setStopDuration(0);
+      setStopTimestamp(null);
       if (isMusicPlaying) {
         toggleMusic(); // This pauses music
       }
-    }, stopDuration * 60 * 1000); // Convert minutes to milliseconds
+    }, delay);
 
-    return () => clearTimeout(timeout); // Cleanup if settings change
-  }
-
-  if (!neverStopEnabled && stopDuration === 0 && stopTimestamp !== null) {
-    const now = Date.now();
-    const delay = stopTimestamp - now;
-
-    if (delay > 0) {
-      const timeout = setTimeout(() => {
-        setAutoHitEnabled(false);
-        if (isMusicPlaying) {
-          toggleMusic(); // This pauses music
-        }
-      }, delay);
-
-      return () => clearTimeout(timeout); // Cleanup if settings change
-    } else {
-      // Timestamp is in the past — stop immediately
-      setAutoHitEnabled(false);
-      if (isMusicPlaying) {
-        toggleMusic();
-      }
+    return () => clearTimeout(timeout);
+  } else {
+    // Timestamp is in the past — stop immediately
+    setAutoHitEnabled(false);
+    setStopDuration(0);
+    setStopTimestamp(null);
+    if (isMusicPlaying) {
+      toggleMusic();
     }
   }
+}
+
 }, [autoHitEnabled, neverStopEnabled, stopDuration, stopTimestamp, isMusicPlaying]);
+
+useEffect(() => {
+  if (!autoHitEnabled || neverStopEnabled) {
+    setCountdownText(null);
+    return;
+  }
+
+  let targetTime: number | null = null;
+
+  if (stopDuration > 0 && stopTimestamp === null) {
+    targetTime = Date.now() + stopDuration * 60 * 1000;
+  } else if (stopDuration === 0 && stopTimestamp !== null) {
+    targetTime = stopTimestamp;
+  }
+
+  if (!targetTime) {
+    setCountdownText(null);
+    return;
+  }
+
+  const updateCountdown = () => {
+    const now = Date.now();
+    const diff = targetTime! - now;
+
+    if (diff <= 0) {
+      setCountdownText(null);
+      return;
+    }
+
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    setCountdownText(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+  };
+
+  updateCountdown(); // Initial call
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [autoHitEnabled, neverStopEnabled, stopDuration, stopTimestamp]);
+
 
   const persistUnsavedCount = async (newCount: number) => {
     const today = new Date().toISOString().split('T')[0];
@@ -443,8 +490,17 @@ export default function Index() {
           }
         }}
       >
-        <View style={[styles.container, { backgroundColor: bgColor }]}>
-          <View style={styles.topRightContainer}>
+    <View style={[styles.container, { backgroundColor: bgColor }]}>
+        <View style={styles.topRightContainer}>
+            {countdownText && (
+            <View style={{ marginBottom: 6 }}>
+            <Text style={{ fontSize: 10, fontWeight: '600', color: '#8B4513' }}>
+            ⏳ {countdownText}
+            </Text>
+        </View>
+    )}
+
+
             <View style={[styles.switchContainer, { backgroundColor: bgColor }]}>
               <Text style={styles.switchLabel}>{t('index.autoHitToggle')}</Text>
               <Switch

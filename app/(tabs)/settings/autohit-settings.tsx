@@ -179,7 +179,7 @@ export default function AutoHitSettingsScreen() {
   };
 
   const formatTimestamp = (timestamp: number | null) => {
-    if (!timestamp) return t('autohit.notSet') || 'Not Set';
+    if (!timestamp) return t('common.notSet') || 'Not Set';
     const date = new Date(timestamp);
     return date.toLocaleString();
   };
@@ -190,7 +190,7 @@ export default function AutoHitSettingsScreen() {
         {/* Never Stop Setting */}
         <View style={styles.toggleRow}>
           <Text style={styles.label}>
-            {t('autohit.neverStop') || 'Never Stop'}
+            {t('settings.subautohit.neverStop') || 'Never Stop'}
           </Text>
           <Switch
             value={neverStopEnabled}
@@ -205,7 +205,7 @@ export default function AutoHitSettingsScreen() {
             <View style={[styles.section, { opacity: neverStopEnabled ? 0.5 : 1 }]}>
                 <View style={styles.labelContainer}>
                     <Text style={styles.label}>
-                    {t('autohit.stopAfter') || 'Stop After'}: {stopDuration} {t('autohit.minutes') || 'minutes'}
+                    {t('settings.subautohit.stopAfter') || 'Stop After'}: {stopDuration} {t('common.minutes') || 'minutes'}
                     </Text>
                 </View>
                 <View style={styles.buttonGroup}>
@@ -232,7 +232,7 @@ export default function AutoHitSettingsScreen() {
             <View style={[styles.section, { opacity: neverStopEnabled ? 0.5 : 1 }]}>
                 <View style={styles.labelContainer}>
                     <Text style={styles.label}>
-                    {t('autohit.stopAt') || 'Stop At'}: {formatTimestamp(stopTimestamp)}
+                    {t('settings.subautohit.stopAt') || 'Stop At'}: {formatTimestamp(stopTimestamp)}
                     </Text>
                 </View>
                 <TouchableOpacity
@@ -244,7 +244,7 @@ export default function AutoHitSettingsScreen() {
                     disabled={neverStopEnabled}
                 >
                     <Text style={styles.dateButtonText}>
-                    {t('autohit.selectDateTime') || 'Select Date & Time'}
+                    {t('settings.subautohit.selectDateTime') || 'Select Date & Time'}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -282,7 +282,7 @@ export default function AutoHitSettingsScreen() {
           <View style={styles.modalOverlay}>
             <View style={[styles.modalContent, { backgroundColor: bgColor }]}>
               <Text style={styles.modalTitle}>
-                {t('autohit.pickDateTime') || 'Pick Date & Time'}
+                {t('settings.subautohit.pickDateTime') || 'Pick Date & Time'}
               </Text>
               <View style={styles.pickerContainer}>
                 <View style={styles.pickerColumn}>
