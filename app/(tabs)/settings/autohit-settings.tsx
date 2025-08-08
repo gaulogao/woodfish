@@ -36,7 +36,7 @@ export default function AutoHitSettingsScreen() {
   const router = useRouter();
   // NeverStop is enabled by default, not persisted
   const [neverStopEnabled, setNeverStopEnabled] = useState<boolean>(true);
-  const [stopDuration, setStopDuration] = useState<number>(10); // Default to 10 minutes
+  const [stopDuration, setStopDuration] = useState<number>(0); // Default to 0 minutes
   const [stopTimestamp, setStopTimestamp] = useState<number | null>(null);
   const [frequency, setFrequency] = useState<number>(1);
   const [bgColor, setBgColor] = useState<string>('#F5F5DC');

@@ -495,7 +495,7 @@ useEffect(() => {
             {countdownText && (
             <View style={{ marginBottom: 6 }}>
             <Text style={{ fontSize: 10, fontWeight: '600', color: '#8B4513' }}>
-            ⏳ {countdownText}
+            ⌛ {countdownText}
             </Text>
         </View>
     )}
