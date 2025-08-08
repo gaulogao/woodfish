@@ -83,14 +83,14 @@ export default function TabLayout() {
           }}
         />
         {/* This defines the new screen as a modal that is not visible in the tab bar */}
-        <Tabs.Screen
+        {/*<Tabs.Screen
           name="autohit-settings"
           options={{
             href: null, // This hides the screen from the tab bar
             presentation: 'modal', // This makes it float over the current screen
             headerShown: false, // We use a custom header in the screen component
           }}
-        />
+        />*/}
       </Tabs>
     </>
   );

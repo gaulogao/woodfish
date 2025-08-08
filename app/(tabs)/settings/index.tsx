@@ -3,24 +3,24 @@ import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  DeviceEventEmitter,
-  Dimensions,
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TouchableOpacity,
-  UIManager,
-  View,
+    Alert,
+    DeviceEventEmitter,
+    Dimensions,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    TouchableOpacity,
+    UIManager,
+    View,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLocalization } from '../useLocalization';
+import { useLocalization } from '../../useLocalization';
 
 const { width } = Dimensions.get('window');
 
@@ -46,8 +46,9 @@ export default function SettingsScreen() {
   const [showMusicPicker, setShowMusicPicker] = useState(false);
 
   const bgColors = [
-    { label: t('settings.colors.beige'), value: '#eab676' },
+    { label: t('settings.colors.beige'), value: '#eab676' }, 
     { label: t('settings.colors.black'), value: '#000000' },
+    { label: t('settings.colors.red'), value: '#640303ff' },
   ];
 
   const languages = [
@@ -211,7 +212,7 @@ export default function SettingsScreen() {
           )}
 
           {/* Auto Hit Settings Link */}
-          <TouchableOpacity style={styles.toggleRow} onPress={() => router.push('/autohit-settings')}>
+          <TouchableOpacity style={styles.toggleRow} onPress={() => router.push('settings/autohit-settings')}>
             <View style={styles.labelContainer}>
               <Feather name="fast-forward" size={iconSize} color={iconColor} />
               <Text style={styles.label}>{t('settings.autohit')}</Text>
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: width * 0.048,
     fontWeight: '600',
-    color: '#4B3F38',
+    color: '#574c46ff',
     marginLeft: 12,
   },
   pickerWrapper: {

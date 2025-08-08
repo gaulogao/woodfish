@@ -12,13 +12,13 @@ export default function RootLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       
       {/* Define the modal screen at the root level. */}
-      <Stack.Screen
+      {/*<Stack.Screen
         name="autohit-settings"
         options={{
           presentation: 'modal',
           headerShown: false,
         }}
-      />
+      />*/}
     </Stack>
   );
 }

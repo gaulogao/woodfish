@@ -67,6 +67,10 @@ export default function Index() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const slideAnim = useRef(new Animated.Value(150)).current;
   const musicRef = useRef<Audio.Sound | null>(null);
+  // ✅ NEW: State for autohit settings
+  const [neverStopEnabled, setNeverStopEnabled] = useState(true);
+  const [stopDuration, setStopDuration] = useState(0);
+  const [stopTimestamp, setStopTimestamp] = useState<number | null>(null);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
@@ -141,6 +145,65 @@ export default function Index() {
       loadSettings();
     }, [])
   );
+
+  // Create an event listener for autohit settings changes
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener('autohitSettingsChanged', (data) => {
+      setNeverStopEnabled(data.neverStopEnabled);
+      setStopDuration(data.stopDuration);
+      setStopTimestamp(data.stopTimestamp);
+    });
+
+    return () => subscription.remove(); // Clean up
+  }, []);
+
+  // Effect to handle auto-stop logic based on autohit settings
+  useEffect(() => {
+  if (!autoHitEnabled) {
+    // Autohit is off — ignore all autohit settings
+    return;
+  }
+
+  // Autohit is on
+  if (neverStopEnabled) {
+    // Never stop — do nothing, autohit and music continue indefinitely
+    return;
+  }
+
+  if (!neverStopEnabled && stopDuration > 0 && stopTimestamp === null) {
+    // Stop after duration
+    const timeout = setTimeout(() => {
+      setAutoHitEnabled(false);
+      if (isMusicPlaying) {
+        toggleMusic(); // This pauses music
+      }
+    }, stopDuration * 60 * 1000); // Convert minutes to milliseconds
+
+    return () => clearTimeout(timeout); // Cleanup if settings change
+  }
+
+  if (!neverStopEnabled && stopDuration === 0 && stopTimestamp !== null) {
+    const now = Date.now();
+    const delay = stopTimestamp - now;
+
+    if (delay > 0) {
+      const timeout = setTimeout(() => {
+        setAutoHitEnabled(false);
+        if (isMusicPlaying) {
+          toggleMusic(); // This pauses music
+        }
+      }, delay);
+
+      return () => clearTimeout(timeout); // Cleanup if settings change
+    } else {
+      // Timestamp is in the past — stop immediately
+      setAutoHitEnabled(false);
+      if (isMusicPlaying) {
+        toggleMusic();
+      }
+    }
+  }
+}, [autoHitEnabled, neverStopEnabled, stopDuration, stopTimestamp, isMusicPlaying]);
 
   const persistUnsavedCount = async (newCount: number) => {
     const today = new Date().toISOString().split('T')[0];
