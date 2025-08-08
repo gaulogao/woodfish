@@ -3,20 +3,20 @@ import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    DeviceEventEmitter,
-    Dimensions,
-    LayoutAnimation,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TouchableOpacity,
-    UIManager,
-    View,
+  Alert,
+  DeviceEventEmitter,
+  Dimensions,
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -46,7 +46,7 @@ export default function SettingsScreen() {
   const [showMusicPicker, setShowMusicPicker] = useState(false);
 
   const bgColors = [
-    { label: t('settings.colors.beige'), value: '#eab676' }, 
+    { label: t('settings.colors.beige'), value: '#eab676' },
     { label: t('settings.colors.black'), value: '#000000' },
     { label: t('settings.colors.red'), value: '#640303ff' },
   ];
@@ -133,7 +133,7 @@ export default function SettingsScreen() {
                 selectedMusic: 'dabeizhou.mp3',
               };
               await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSettings));
-              
+
               // Update local state to reflect the reset
               setBgColor(defaultSettings.bgColor);
               setLanguage(defaultSettings.language);

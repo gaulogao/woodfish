@@ -3,9 +3,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Animated,
   Dimensions,
   FlatList,
+  Image,
   Modal,
   SafeAreaView,
   StyleSheet,
@@ -18,6 +21,7 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { BarChart } from 'react-native-chart-kit';
 import { LanguageCode } from '../translations';
 import { useLocalization } from '../useLocalization';
+
 
 const STORAGE_KEY = 'daily_hits';
 const { width } = Dimensions.get('window');
@@ -51,6 +55,8 @@ export default function StatisticsScreen() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [bgColor, setBgColor] = useState('#F5F5DC');
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [fadeAnim] = useState(new Animated.Value(0));
 
   useFocusEffect(
     useCallback(() => {
@@ -190,10 +196,26 @@ export default function StatisticsScreen() {
       return [];
     })
     .sort((a, b) => b.timestamp - a.timestamp); // Sort by most recent first
- 
+
   const iconColor = "#4B3F38";
   const iconSize = width * 0.055;
-  
+
+  useEffect(() => {
+    if (modalVisible) {
+      const timer = setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start(() => {
+          setModalVisible(false);
+        });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [modalVisible]);
+
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
       <View style={styles.headerRow}>
@@ -280,25 +302,43 @@ export default function StatisticsScreen() {
         animationType="fade"
         onRequestClose={() => setModalVisible(false)}
       >
-        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalVisible(false)}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('statistics.dailyTotal')}</Text>
-            <Text style={styles.modalText}>
-              {selectedDate}
-            </Text>
-            <Text style={styles.modalCount}>
-              <Feather name="target" size={24} />{' '}
-              {selectedDate ? hitData[selectedDate]?.total || 0 : 0}
-            </Text>
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              style={styles.closeButton}
-            >
-              <Text style={styles.closeText}>{t('common.confirm')}</Text>
-            </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setModalVisible(false)}
+        >
+          <View style={styles.halfScreenModal}>
+            <Animated.View style={[styles.modalInnerContent, { opacity: fadeAnim }]}>
+              {!imageLoaded && (
+                <ActivityIndicator size="small" color="#ffd700" />
+              )}
+              <Image
+                source={require('../../assets/images/buddha-bg.png')}
+                style={styles.halfScreenImage}
+                resizeMode="cover"
+                onLoad={() => {
+                  setImageLoaded(true);
+                  Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 500,
+                    useNativeDriver: true,
+                  }).start();
+                }}
+              />
+              {imageLoaded && (
+                <View style={styles.textContainer}>
+                  <Text style={styles.dateText}>{selectedDate}</Text>
+                  <Text style={styles.modalCount}>
+                    <Feather name="target" size={20} color="#ffd700" />{' '}
+                    {selectedDate ? hitData[selectedDate]?.total || 0 : 0}
+                  </Text>
+                </View>
+              )}
+            </Animated.View>
           </View>
         </TouchableOpacity>
       </Modal>
+
     </SafeAreaView>
   );
 }
@@ -364,18 +404,71 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  halfScreenModal: {
+    width: '90%',
+    height: '60%', // Increased height
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalInnerContent: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+  },
+
+  halfScreenImage: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
+  textContainer: {
+    position: 'absolute',
+    bottom: 30,
+    width: '100%',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  dateText: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: '600',
+    marginBottom: 8,
+    textShadowColor: '#000',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  modalCount: {
+    fontSize: 22,
+    color: '#ffd700',
+    fontWeight: 'bold',
+    textShadowColor: '#000',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
   modalContent: {
     backgroundColor: 'white',
-    padding: 24,
-    borderRadius: 15,
+    margin: 20,
+    padding: 20,
+    borderRadius: 12,
     alignItems: 'center',
-    elevation: 5,
-    width: '80%',
+    justifyContent: 'center',
+    width: '80%', // Wider modal (90% of screen width)
+    alignSelf: 'center', // Center it horizontally
   },
+
+  buddhaImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 16,
+  },
+
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -386,12 +479,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
     marginBottom: 16,
-  },
-  modalCount: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    color: '#004d40'
   },
   closeButton: {
     backgroundColor: '#4CAF50',

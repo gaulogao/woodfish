@@ -10,7 +10,7 @@ export default function RootLayout() {
     <Stack>
       {/* The main screen is the Tab navigator, which is defined in the (tabs) group. */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      
+
       {/* Define the modal screen at the root level. */}
       {/*<Stack.Screen
         name="autohit-settings"
