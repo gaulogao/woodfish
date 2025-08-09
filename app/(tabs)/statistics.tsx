@@ -275,14 +275,16 @@ export default function StatisticsScreen() {
           data={flattenedHits}
           keyExtractor={(item) => item.timestamp.toString()}
           renderItem={({ item }) => (
-            <View style={styles.listItem}>
-              <View>
-                <Text style={styles.listItemText}>
-                  <Feather name="calendar" size={16} /> {item.date}
-                </Text>
-                <Text style={styles.listItemText}>
-                  <Feather name="target" size={16} /> {item.count}
-                </Text>
+            <View style={styles.cardItem}>
+              <View style={styles.cardColumn}>
+                <View style={styles.cardRow}>
+                  <Feather name="calendar" size={18} color="#4A90E2" />
+                  <Text style={styles.cardText}>{item.date}</Text>
+                </View>
+                <View style={styles.cardRow}>
+                  <Feather name="target" size={18} color="#4A90E2" />
+                  <Text style={styles.cardText}>{item.count}</Text>
+                </View>
               </View>
               <TouchableOpacity
                 onPress={() => confirmDeleteEntry(item.date, item.timestamp)}
@@ -291,9 +293,11 @@ export default function StatisticsScreen() {
                 <Feather name="trash-2" size={20} color="white" />
               </TouchableOpacity>
             </View>
+
           )}
           ListEmptyComponent={<Text style={styles.emptyListText}>{t('statistics.noData')}</Text>}
         />
+
       )}
 
       <Modal
@@ -367,7 +371,7 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.07)', // ✅ Soft overlay
     borderRadius: 15,
     paddingHorizontal: 6,
   },
@@ -490,5 +494,46 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  cardItem: {
+    backgroundColor: 'rgba(255, 255, 255, 0.07)', // ✅ Soft overlay
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    marginHorizontal: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4A90E2',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  cardColumn: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+    minHeight: 24, // Ensures consistent row height
+  },
+
+  cardText: {
+    fontSize: 16,
+    color: '#F5F5DC', // ✅ Warm beige text
+    fontWeight: '500',
+    marginLeft: 8,
+    lineHeight: 20,
   },
 });

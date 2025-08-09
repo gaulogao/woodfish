@@ -77,6 +77,7 @@ export default function Index() {
     const [savedCount, setSavedCount] = useState(0);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const modalScaleAnim = useRef(new Animated.Value(0.5)).current;
+    const waveBars = Array.from({ length: 6 }, () => useRef(new Animated.Value(0)).current);
 
 
     useFocusEffect(
@@ -480,6 +481,36 @@ export default function Index() {
         };
     }, [selectedMusic]);
 
+    useEffect(() => {
+        const animations = waveBars.map((bar, i) =>
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(bar, {
+                        toValue: 1,
+                        duration: 300 + i * 100,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(bar, {
+                        toValue: 0,
+                        duration: 300 + i * 100,
+                        useNativeDriver: true,
+                    }),
+                ])
+            )
+        );
+
+        if (isMusicPlaying) {
+            animations.forEach(anim => anim.start());
+        } else {
+            waveBars.forEach(bar => bar.stopAnimation());
+        }
+
+        return () => {
+            waveBars.forEach(bar => bar.stopAnimation());
+        };
+    }, [isMusicPlaying]);
+
+
     return (
         <>
             <TouchableWithoutFeedback
@@ -563,6 +594,31 @@ export default function Index() {
                             />
                         </TouchableOpacity>
                     )}
+
+                    {isMusicPlaying && (
+                        <View style={{ position: 'absolute', bottom: 90, right: 20, flexDirection: 'row', gap: 4 }}>
+                            {waveBars.map((bar, index) => (
+                                <Animated.View
+                                    key={index}
+                                    style={{
+                                        width: 4,
+                                        height: 20,
+                                        borderRadius: 2,
+                                        backgroundColor: '#4CAF50',
+                                        transform: [
+                                            {
+                                                scaleY: bar.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [0.5, 1.5],
+                                                }),
+                                            },
+                                        ],
+                                    }}
+                                />
+                            ))}
+                        </View>
+                    )}
+
                 </View>
             </TouchableWithoutFeedback>
 
@@ -613,7 +669,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },
+        backgroundColor: 'rgba(255, 255, 255, 0.07)', // ✅ Soft overlay
     },
+
     saveButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -626,12 +684,18 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },
         marginTop: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.07)', // ✅ Soft overlay
     },
     switchLabel: {
         fontSize: 10,
-        color: '#8B4513',
+        color: '#F5F5DC', // ✅ Warm beige text
         marginRight: 4,
         fontWeight: '600',
+    },
+    counterText: {
+        fontSize: width * 0.15,
+        fontWeight: 'bold',
+        color: '#F5F5DC', // ✅ Matches switchLabel
     },
     switchStyle: {
         transform: [{ scale: 0.6 }],
@@ -641,11 +705,7 @@ const styles = StyleSheet.create({
         height: width * 0.7,
         marginTop: 20,
     },
-    counterText: {
-        fontSize: width * 0.15,
-        fontWeight: 'bold',
-        color: '#8B4513',
-    },
+
     musicButton: {
         position: 'absolute',
         bottom: 30,

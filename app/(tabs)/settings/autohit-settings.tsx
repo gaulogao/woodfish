@@ -1,8 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useNavigation, useRouter } from 'expo-router';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
     DeviceEventEmitter,
     Dimensions,
@@ -42,6 +42,7 @@ export default function AutoHitSettingsScreen() {
     const [bgColor, setBgColor] = useState<string>('#F5F5DC');
     const [showDateTimePickerModal, setShowDateTimePickerModal] = useState<boolean>(false);
     const [tempDate, setTempDate] = useState<Date>(new Date());
+    const navigation = useNavigation();
 
     // Function to save a specific setting (neverStopEnabled is NOT persisted)
     const saveSetting = async (key: string, value: any) => {
@@ -92,6 +93,16 @@ export default function AutoHitSettingsScreen() {
             stopTimestamp,
         });
     }, [neverStopEnabled, stopDuration, stopTimestamp]);
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                backgroundColor: bgColor,
+            },
+            headerTintColor: '#F5F5DC', // optional: matches your text color
+        });
+    }, [navigation, bgColor]);
+
 
     const handleNeverStopChange = (value: boolean) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -350,7 +361,7 @@ export default function AutoHitSettingsScreen() {
                                 <TouchableOpacity style={[styles.modalButton, styles.buttonBorder]} onPress={() => setShowDateTimePickerModal(false)}>
                                     <Text style={styles.modalButtonText}>{t('common.cancel') || 'Cancel'}</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.modalButton, styles.buttonBackground]} onPress={handleStopDateChange}>
+                                <TouchableOpacity style={[styles.modalButton, styles.buttonBorder]} onPress={handleStopDateChange}>
                                     <Text style={[styles.modalButtonText, { color: '#fff' }]}>{t('common.set') || 'Set'}</Text>
                                 </TouchableOpacity>
                             </View>
@@ -374,12 +385,12 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         paddingHorizontal: 15,
         borderBottomWidth: 1,
-        borderBottomColor: 'rgba(75, 63, 56, 0.2)',
+        borderBottomColor: 'rgba(255, 255, 255, 0.1)', // softened for dark backgrounds
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#4B3F38',
+        color: '#F5F5DC', // warm beige
     },
     closeButton: {
         position: 'absolute',
@@ -400,7 +411,7 @@ const styles = StyleSheet.create({
     },
     section: {
         width: '100%',
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(255, 255, 255, 0.07)', // translucent light overlay
         borderRadius: 15,
         padding: 15,
         marginBottom: 20,
@@ -418,7 +429,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#4B3F38',
+        color: '#F5F5DC',
         marginLeft: 8,
     },
     buttonGroup: {
@@ -434,11 +445,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginHorizontal: 10,
+        borderColor: '#F5F5DC',
     },
     durationButtonText: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#4B3F38',
+        color: '#F5F5DC',
     },
     dateButton: {
         marginTop: 10,
@@ -446,11 +458,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         alignItems: 'center',
+        borderColor: '#F5F5DC',
     },
     dateButtonText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#4B3F38',
+        color: '#F5F5DC',
     },
     modalOverlay: {
         flex: 1,
@@ -467,13 +480,14 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
+        backgroundColor: 'rgba(139, 0, 0, 0.85)', // deep red overlay
     },
     modalTitle: {
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
-        color: '#4B3F38',
+        color: '#F5F5DC',
     },
     pickerContainer: {
         flexDirection: 'row',
@@ -487,7 +501,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         marginBottom: 5,
-        color: '#4B3F38',
+        color: '#F5F5DC',
     },
     pickerWrapper: {
         flexDirection: 'column',
@@ -497,7 +511,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginVertical: 5,
-        color: '#4B3F38',
+        color: '#F5F5DC',
     },
     modalButtonRow: {
         flexDirection: 'row',
@@ -509,20 +523,21 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 10,
         borderWidth: 1,
+        borderColor: '#F5F5DC',
     },
     modalButtonText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#4B3F38',
+        color: '#F5F5DC',
     },
     buttonBorder: {
-        borderColor: '#4B3F38',
+        borderColor: '#F5F5DC',
     },
     buttonBackground: {
-        backgroundColor: '#4B3F38',
+        backgroundColor: '#F5F5DC',
     },
     slider: {
         width: '100%',
         height: 40,
-    }
+    },
 });

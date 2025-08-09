@@ -180,7 +180,7 @@ export default function SettingsScreen() {
           {showColorPicker && (
             <View style={styles.pickerWrapper}>
               <Picker selectedValue={bgColor} onValueChange={setBgColor} mode="dropdown" style={styles.picker} dropdownIconColor="#4B3F38">
-                {bgColors.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#000" />)}
+                {bgColors.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#fff" />)}
               </Picker>
             </View>
           )}
@@ -193,7 +193,7 @@ export default function SettingsScreen() {
           {showLanguagePicker && (
             <View style={styles.pickerWrapper}>
               <Picker selectedValue={language} onValueChange={setLanguage} mode="dropdown" style={styles.picker} dropdownIconColor="#4B3F38">
-                {languages.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#000" />)}
+                {languages.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#fff" />)}
               </Picker>
             </View>
           )}
@@ -206,7 +206,7 @@ export default function SettingsScreen() {
           {showMusicPicker && (
             <View style={styles.pickerWrapper}>
               <Picker selectedValue={selectedMusic} onValueChange={setSelectedMusic} mode="dropdown" style={styles.picker} dropdownIconColor="#4B3F38">
-                {musicOptions.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#000" />)}
+                {musicOptions.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#fff" />)}
               </Picker>
             </View>
           )}
@@ -297,17 +297,20 @@ const styles = StyleSheet.create({
     width: '90%',
     marginTop: 20,
     marginBottom: 8,
+    backgroundColor: 'rgba(255,255,255,0.07)', // ✅ Dimmed background
+    padding: 10,
+    borderRadius: 12,
   },
   label: {
     fontSize: width * 0.048,
     fontWeight: '600',
-    color: '#574c46ff',
+    color: '#F5F5DC', // ✅ Warm beige text
     marginLeft: 12,
   },
   pickerWrapper: {
     width: '90%',
     borderRadius: 10,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: 'rgba(255,255,255,0.07)', // ✅ Dimmed background
     overflow: 'hidden',
     borderColor: '#8B4513',
     borderWidth: 1,
@@ -315,7 +318,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: '100%',
-    color: '#000',
+    color: '#F5F5DC', // ✅ Matches label
   },
   toggleRow: {
     flexDirection: 'row',
@@ -323,13 +326,9 @@ const styles = StyleSheet.create({
     width: '90%',
     marginTop: 20,
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(75, 63, 56, 0.1)',
-    paddingBottom: 20,
-  },
-  labelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.07)', // ✅ Dimmed background
+    borderRadius: 12,
+    padding: 12,
   },
   resetButton: {
     marginTop: 40,
@@ -346,4 +345,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: 8,
   },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
 });
+
