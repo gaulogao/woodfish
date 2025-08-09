@@ -45,7 +45,7 @@ export default function SettingsScreen() {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [showMusicPicker, setShowMusicPicker] = useState(false);
-  const [prayWords, setPrayWords] = useState('');
+  const [prayWords, setprayWords] = useState('');
 
   const bgColors = [
     { label: t('settings.colors.beige'), value: '#eab676' },
@@ -79,7 +79,7 @@ export default function SettingsScreen() {
           if (typeof settings.disarrayEnabled === 'boolean') setDisarrayEnabled(settings.disarrayEnabled);
           if (typeof settings.showCounter === 'boolean') setshowCounter(settings.showCounter);
           if (settings.selectedMusic) setSelectedMusic(settings.selectedMusic);
-          if (settings.prayWords) setPrayWords(settings.prayWords);
+          if (settings.prayWords) setprayWords(settings.prayWords);
         }
       } catch (e) {
         console.warn('Failed to load settings', e);
@@ -147,7 +147,7 @@ export default function SettingsScreen() {
               setDisarrayEnabled(defaultSettings.disarrayEnabled);
               setshowCounter(defaultSettings.showCounter);
               setSelectedMusic(defaultSettings.selectedMusic);
-              setPrayWords('');
+              setprayWords('');
 
               // Globally emit all reset settings
               DeviceEventEmitter.emit('settingsChanged', defaultSettings);
@@ -220,16 +220,16 @@ export default function SettingsScreen() {
 <View style={styles.toggleRow}>
   <View style={styles.labelContainer}>
     <Feather name="edit-3" size={iconSize} color={iconColor} />
-    <Text style={styles.label}>{t('settings.praywords')}</Text>
+    <Text style={styles.label}>{t('settings.prayWords')|| 'Pray Words' }</Text>
   </View>
 </View>
 <View style={styles.pickerWrapper}>
   <TextInput
     style={[styles.picker, { padding: 10 }]}
-    placeholder={t('settings.praywords')}
+    placeholder={t('settings.prayWords')}
     placeholderTextColor="#ccc"
     value={prayWords}
-    onChangeText={setPrayWords}
+    onChangeText={setprayWords}
   />
 </View>
 

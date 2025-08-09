@@ -70,6 +70,7 @@ export const translations = {
       autohitTitle: 'Auto Hit Settings',
       autoHitToggle: 'Auto Hit',
       frequencyLabel: 'Auto Hit Frequency',
+      prayWords: 'Pray Words',
       subautohit: {
         neverStop: 'Never Stop',
         stopDuration: 'Duration',
@@ -202,6 +203,7 @@ export const translations = {
       autohit: '自动敲击',
       autoHitToggle: '自动念诵',
       frequencyLabel: '自敲频率',
+      prayWords: '念诵词',
       subautohit: {
         neverStop: '永不停止',
         stopDuration: '持续时间',
@@ -332,6 +334,7 @@ export const translations = {
       autohit: '自動敲擊',
       autoHitToggle: '自動念誦',
       frequencyLabel: '自敲頻率',
+      prayWords: '念誦詞',
       subautohit: {
         neverStop: '永不停止',
         stopDuration: '持續時間',
@@ -462,6 +465,7 @@ export const translations = {
       autohit: 'Kira Automatik',
       autoHitToggle: 'Kira Automatik',
       frequencyLabel: 'Frekuensi Pengetukan Sendiri',
+      prayWords: 'Kata-kata Zikir',
       subautohit: {
         neverStop: 'Tidak Pernah Berhenti',
         stopDuration: 'Tempoh',
