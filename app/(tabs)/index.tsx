@@ -72,6 +72,7 @@ export default function Index() {
     const [stopDuration, setStopDuration] = useState(0);
     const [stopTimestamp, setStopTimestamp] = useState<number | null>(null);
     const [countdownText, setCountdownText] = useState<string | null>(null);
+    const [prayWords, setPrayWords] = useState('');
 
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [savedCount, setSavedCount] = useState(0);
@@ -125,6 +126,7 @@ export default function Index() {
             if (typeof data?.showCounter === 'boolean') setShowCounter(data.showCounter);
             if (typeof data?.disarrayEnabled === 'boolean') setDisarrayEnabled(data.disarrayEnabled);
             if (data?.selectedMusic) setSelectedMusic(data.selectedMusic); // ✅ NEW
+            if (typeof data?.prayWords === 'string') setPrayWords(data.prayWords);
         });
         return () => subscription.remove();
     }, []);
@@ -142,12 +144,13 @@ export default function Index() {
                     if (settings.bgColor) { setBgColor(settings.bgColor); }
                     if (typeof settings.frequency === 'number') { setFrequency(settings.frequency); }
                     if (settings.selectedMusic) setSelectedMusic(settings.selectedMusic); // ✅ NEW
+                    if (settings.prayWords) setPrayWords(settings.prayWords);
                 }
             };
             loadSettings();
         }, [])
     );
-
+''
     // Create an event listener for autohit settings changes
     useEffect(() => {
         const subscription = DeviceEventEmitter.addListener('autohitSettingsChanged', (data) => {
@@ -565,6 +568,11 @@ export default function Index() {
                     >
                         {count}
                     </Text>}
+                    {prayWords !== '' && (
+                        <Text style={styles.prayWordsText}>
+                            {prayWords}
+                        </Text>
+                    )}
 
                     <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
                         <Animated.Image
@@ -752,4 +760,12 @@ const styles = StyleSheet.create({
         color: 'white',
         marginTop: 5,
     },
+    prayWordsText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#F5F5DC', // Matches counterText and switchLabel
+        marginTop: 10,
+        textAlign: 'center',
+    }
+
 });

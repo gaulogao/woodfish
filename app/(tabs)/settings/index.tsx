@@ -14,9 +14,10 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   TouchableOpacity,
   UIManager,
-  View,
+  View
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -44,6 +45,7 @@ export default function SettingsScreen() {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [showMusicPicker, setShowMusicPicker] = useState(false);
+  const [prayWords, setPrayWords] = useState('');
 
   const bgColors = [
     { label: t('settings.colors.beige'), value: '#eab676' },
@@ -77,6 +79,7 @@ export default function SettingsScreen() {
           if (typeof settings.disarrayEnabled === 'boolean') setDisarrayEnabled(settings.disarrayEnabled);
           if (typeof settings.showCounter === 'boolean') setshowCounter(settings.showCounter);
           if (settings.selectedMusic) setSelectedMusic(settings.selectedMusic);
+          if (settings.prayWords) setPrayWords(settings.prayWords);
         }
       } catch (e) {
         console.warn('Failed to load settings', e);
@@ -101,6 +104,7 @@ export default function SettingsScreen() {
           disarrayEnabled,
           showCounter,
           selectedMusic,
+          prayWords,
         };
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
         DeviceEventEmitter.emit('settingsChanged', newSettings);
@@ -109,7 +113,7 @@ export default function SettingsScreen() {
       }
     };
     saveSettings();
-  }, [bgColor, language, soundEnabled, hapticsEnabled, disarrayEnabled, showCounter, selectedMusic]);
+  }, [bgColor, language, soundEnabled, hapticsEnabled, disarrayEnabled, showCounter, selectedMusic, prayWords]);
 
   const confirmReset = () => {
     Alert.alert(
@@ -131,6 +135,7 @@ export default function SettingsScreen() {
                 disarrayEnabled: false,
                 showCounter: true,
                 selectedMusic: 'dabeizhou.mp3',
+                prayWords: '', // Reset prayWords
               };
               await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSettings));
 
@@ -142,6 +147,7 @@ export default function SettingsScreen() {
               setDisarrayEnabled(defaultSettings.disarrayEnabled);
               setshowCounter(defaultSettings.showCounter);
               setSelectedMusic(defaultSettings.selectedMusic);
+              setPrayWords('');
 
               // Globally emit all reset settings
               DeviceEventEmitter.emit('settingsChanged', defaultSettings);
@@ -210,6 +216,23 @@ export default function SettingsScreen() {
               </Picker>
             </View>
           )}
+
+<View style={styles.toggleRow}>
+  <View style={styles.labelContainer}>
+    <Feather name="edit-3" size={iconSize} color={iconColor} />
+    <Text style={styles.label}>{t('settings.praywords')}</Text>
+  </View>
+</View>
+<View style={styles.pickerWrapper}>
+  <TextInput
+    style={[styles.picker, { padding: 10 }]}
+    placeholder={t('settings.praywords')}
+    placeholderTextColor="#ccc"
+    value={prayWords}
+    onChangeText={setPrayWords}
+  />
+</View>
+
 
           {/* Auto Hit Settings Link */}
           <TouchableOpacity style={styles.toggleRow} onPress={() => router.push('settings/autohit-settings')}>
