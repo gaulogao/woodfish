@@ -79,6 +79,8 @@ export default function Index() {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const modalScaleAnim = useRef(new Animated.Value(0.5)).current;
     const waveBars = Array.from({ length: 6 }, () => useRef(new Animated.Value(0)).current);
+    const prayWordsAnim = useRef(new Animated.Value(0)).current;
+
 
 
     useFocusEffect(
@@ -293,6 +295,8 @@ export default function Index() {
             persistUnsavedCount(newCount);
             return newCount;
         });
+        if (prayWords) triggerPrayWordsAnimation();
+
     }, [hapticsEnabled, soundEnabled, scaleAnim]);
 
 
@@ -513,6 +517,26 @@ export default function Index() {
         };
     }, [isMusicPlaying]);
 
+const triggerPrayWordsAnimation = () => {
+  prayWordsAnim.setValue(0);
+  Animated.sequence([
+    Animated.timing(prayWordsAnim, {
+      toValue: 1,
+      duration: 100,
+      useNativeDriver: true,
+    }),
+    Animated.delay(100),
+    Animated.timing(prayWordsAnim, {
+      toValue: 2,
+      duration: 100,
+      useNativeDriver: true,
+    }),
+  ]).start(() => {
+    prayWordsAnim.setValue(0); // reset after animation
+  });
+};
+
+
 
     return (
         <>
@@ -569,10 +593,36 @@ export default function Index() {
                         {count}
                     </Text>}
                     {prayWords !== '' && (
-                        <Text style={styles.prayWordsText}>
-                            {prayWords}
-                        </Text>
-                    )}
+  <Animated.Text
+    style={[
+      styles.prayWordsText,
+      {
+        opacity: prayWordsAnim.interpolate({
+          inputRange: [0, 1, 2],
+          outputRange: [0, 1, 0],
+        }),
+        transform: [
+          {
+            scale: prayWordsAnim.interpolate({
+              inputRange: [0, 1, 2],
+              outputRange: [0.8, 1.2, 1.2],
+            }),
+          },
+          {
+            translateY: prayWordsAnim.interpolate({
+              inputRange: [0, 1, 2],
+              outputRange: [0, 0, -40], // float upward
+            }),
+          },
+        ],
+      },
+    ]}
+  >
+    {prayWords}
+  </Animated.Text>
+)}
+
+
 
                     <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
                         <Animated.Image
