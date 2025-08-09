@@ -659,7 +659,7 @@ const triggerPrayWordsAnimation = () => {
                                 <Animated.View
                                     key={index}
                                     style={{
-                                        width: 4,
+                                        width: 2,
                                         height: 20,
                                         borderRadius: 2,
                                         backgroundColor: '#4CAF50',
