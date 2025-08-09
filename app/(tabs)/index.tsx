@@ -78,7 +78,8 @@ export default function Index() {
     const [savedCount, setSavedCount] = useState(0);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const modalScaleAnim = useRef(new Animated.Value(0.5)).current;
-    const waveBars = Array.from({ length: 6 }, () => useRef(new Animated.Value(0)).current);
+    const NUM_BARS = 12; // or any number you like
+    const waveBars = Array.from({ length: NUM_BARS }, () => useRef(new Animated.Value(0)).current);
     const prayWordsAnim = useRef(new Animated.Value(0)).current;
 
 
