@@ -207,6 +207,7 @@ export default function StatisticsScreen() {
   const iconColor = "#4B3F38";
   const iconSize = width * 0.055;
 
+  {/* Automatically close the modal after 3 seconds 
   useEffect(() => {
     if (modalVisible) {
       const timer = setTimeout(() => {
@@ -221,7 +222,7 @@ export default function StatisticsScreen() {
       return () => clearTimeout(timer);
     }
   }, [modalVisible]);
-
+*/}
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
@@ -341,6 +342,16 @@ export default function StatisticsScreen() {
         >
           <View style={styles.halfScreenModal}>
             <Animated.View style={[styles.modalInnerContent, { opacity: fadeAnim }]}>
+              <TouchableOpacity
+  style={styles.modalCloseIcon}
+  onPress={() => {
+    setModalVisible(false);
+    setSelectedPrayWords(null);
+  }}
+>
+  <Feather name="x" size={28} color="#fff" />
+</TouchableOpacity>
+
               {!imageLoaded && (
                 <ActivityIndicator size="small" color="#ffd700" />
               )}
@@ -372,7 +383,7 @@ export default function StatisticsScreen() {
               )}
               {modalType === 'single' && selectedItem?.prayWords && (
                 <View style={styles.prayWordsContainer}>
-                  <Text style={styles.prayWordsLabel}>🙏 Prayer Words</Text>
+                  <Text style={styles.prayWordsLabel}>🙏 {t('settings.prayWords')|| 'Prayer Words' }</Text>
                   <Text style={styles.prayWordsText}>
                     “{selectedItem.prayWords}”
                   </Text>
