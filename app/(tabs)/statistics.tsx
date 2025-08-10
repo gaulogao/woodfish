@@ -1,7 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import * as MediaLibrary from 'expo-media-library';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -19,6 +20,7 @@ import {
 } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { BarChart } from 'react-native-chart-kit';
+import ViewShot from 'react-native-view-shot';
 import { LanguageCode } from '../translations';
 import { useLocalization } from '../useLocalization';
 
@@ -31,7 +33,7 @@ const chartWidth = width - 32;
 interface HitRecord {
   timestamp: number;
   count: number;
-  prayWords?: string; // ✅ Add this field
+  prayWords?: string;
 }
 
 
@@ -63,7 +65,7 @@ export default function StatisticsScreen() {
   const [modalType, setModalType] = useState<'single' | 'daily' | null>(null);
   const [selectedItem, setSelectedItem] = useState<ListHitRecord | null>(null);
 
-
+  const viewRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -83,7 +85,6 @@ export default function StatisticsScreen() {
       loadHitData();
     }, [])
   );
-
   useEffect(() => {
     const localeStrings = t('calendar') as any;
 
@@ -106,7 +107,6 @@ export default function StatisticsScreen() {
       console.warn('[Calendar Locale] Invalid or missing calendar object for:', language, localeStrings);
     }
   }, [language, t]);
-
   const loadHitData = async () => {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
@@ -128,7 +128,6 @@ export default function StatisticsScreen() {
       console.error('Failed to save hit data', e);
     }
   };
-
   const deleteEntry = (date: string, timestamp: number) => {
     const updatedData = { ...hitData };
     const dayData = updatedData[date];
@@ -137,11 +136,9 @@ export default function StatisticsScreen() {
       const hitToDelete = dayData.hits.find(h => h.timestamp === timestamp);
       if (!hitToDelete) return;
 
-      // Subtract from total and filter out the hit
       dayData.total -= hitToDelete.count;
       dayData.hits = dayData.hits.filter(h => h.timestamp !== timestamp);
 
-      // If no hits are left for the day, remove the entire day's entry
       if (dayData.hits.length === 0) {
         delete updatedData[date];
       } else {
@@ -173,56 +170,74 @@ export default function StatisticsScreen() {
     };
     return acc;
   }, {} as any);
-
   const currentMonthDates = Object.keys(hitData).filter(date => date.startsWith(selectedMonth));
   const weekSums: number[] = [0, 0, 0, 0, 0];
   currentMonthDates.forEach(date => {
     const day = parseInt(date.split('-')[2], 10);
     const weekIndex = Math.min(4, Math.floor((day - 1) / 7));
-    weekSums[weekIndex] += hitData[date]?.total || 0; // Use the total for the chart
+    weekSums[weekIndex] += hitData[date]?.total || 0;
   });
 
   const handleDayPress = (day: { dateString: string }) => {
     const date = day.dateString;
     if (hitData[date] && hitData[date].total > 0) {
       setSelectedDate(date);
+      setModalType('daily');
       setModalVisible(true);
     } else {
       setSelectedDate(null);
     }
   };
 
-  // ✅ FIX: Added a defensive check to handle old data formats and prevent crashing.
   const flattenedHits: ListHitRecord[] = Object.entries(hitData)
     .flatMap(([date, data]) => {
-      // Defensively check if data is in the expected format before mapping
       if (data && Array.isArray(data.hits)) {
         return data.hits.map(hit => ({ ...hit, date }));
       }
-      // If the data for a date is not in the correct format (e.g., old data), return an empty array
       return [];
     })
-    .sort((a, b) => b.timestamp - a.timestamp); // Sort by most recent first
+    .sort((a, b) => b.timestamp - a.timestamp);
 
   const iconColor = "#4B3F38";
   const iconSize = width * 0.055;
 
-  {/* Automatically close the modal after 3 seconds 
-  useEffect(() => {
-    if (modalVisible) {
-      const timer = setTimeout(() => {
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }).start(() => {
-          setModalVisible(false);
+  const handleExportImage = async () => {
+    if (viewRef.current) {
+      try {
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert(t('common.permissionRequired'), t('common.photoPermissionMessage'));
+          return;
+        }
+
+        // This is the capture logic that might be crashing.
+        // The library needs to be properly linked.
+        const uri = await ViewShot.captureRef(viewRef, {
+          format: 'jpg',
+          quality: 0.9,
+          width: 500,
+          height: 800,
         });
-      }, 3000);
-      return () => clearTimeout(timer);
+
+        await MediaLibrary.saveToLibraryAsync(uri);
+        Alert.alert(
+          t('common.success'),
+          t('statistics.imageExportSuccess'),
+          [
+            {
+              text: t('common.confirm'), // This will be your localized label
+              onPress: () => { }, // Optional callback
+            },
+          ]
+        );
+      } catch (error) {
+        console.error('Failed to export image', error);
+        Alert.alert(t('common.error'), t('statistics.imageExportFail'));
+      }
+    } else {
+      Alert.alert('Error', 'Modal content is not ready to be captured. Please try again.');
     }
-  }, [modalVisible]);
-*/}
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
@@ -297,8 +312,6 @@ export default function StatisticsScreen() {
                 setModalType('single');
                 setModalVisible(true);
               }}
-
-
               style={styles.cardItem}
             >
               <View style={styles.cardColumn}>
@@ -318,12 +331,9 @@ export default function StatisticsScreen() {
                 <Feather name="trash-2" size={20} color="white" />
               </TouchableOpacity>
             </TouchableOpacity>
-
-
           )}
           ListEmptyComponent={<Text style={styles.emptyListText}>{t('statistics.noData')}</Text>}
         />
-
       )}
 
       <Modal
@@ -341,16 +351,13 @@ export default function StatisticsScreen() {
           onPress={() => setModalVisible(false)}
         >
           <View style={styles.halfScreenModal}>
-            <Animated.View style={[styles.modalInnerContent, { opacity: fadeAnim }]}>
-              <TouchableOpacity
-  style={styles.modalCloseIcon}
-  onPress={() => {
-    setModalVisible(false);
-    setSelectedPrayWords(null);
-  }}
->
-  <Feather name="x" size={28} color="#fff" />
-</TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalExportIcon}
+              onPress={handleExportImage}
+            >
+              <Feather name="share" size={24} color="#fff" />
+            </TouchableOpacity>
+            <Animated.View style={[styles.modalInnerContent, { opacity: fadeAnim }]} ref={viewRef}>
 
               {!imageLoaded && (
                 <ActivityIndicator size="small" color="#ffd700" />
@@ -376,22 +383,17 @@ export default function StatisticsScreen() {
                     {modalType === 'daily'
                       ? (selectedDate ? hitData[selectedDate]?.total || 0 : 0)
                       : (selectedItem ? selectedItem.count || 0 : 0)}
-
-
                   </Text>
                 </View>
               )}
               {modalType === 'single' && selectedItem?.prayWords && (
                 <View style={styles.prayWordsContainer}>
-                  <Text style={styles.prayWordsLabel}>🙏 {t('settings.prayWords')|| 'Prayer Words' }</Text>
+                  <Text style={styles.prayWordsLabel}>🙏 {t('settings.prayWords') || 'Prayer Words'}</Text>
                   <Text style={styles.prayWordsText}>
                     “{selectedItem.prayWords}”
                   </Text>
                 </View>
               )}
-
-
-
               {modalType === 'daily' && selectedDate && hitData[selectedDate]?.hits?.length > 0 && (
                 <View style={styles.dailyPrayWordsWrapper}>
                   {hitData[selectedDate].hits.map((hit, index) => (
@@ -406,10 +408,6 @@ export default function StatisticsScreen() {
                   ))}
                 </View>
               )}
-
-
-
-
             </Animated.View>
           </View>
         </TouchableOpacity>
@@ -443,7 +441,7 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.07)', // ✅ Soft overlay
+    backgroundColor: 'rgba(255, 255, 255, 0.07)',
     borderRadius: 15,
     paddingHorizontal: 6,
   },
@@ -486,7 +484,7 @@ const styles = StyleSheet.create({
   },
   halfScreenModal: {
     width: '90%',
-    height: '60%', // Increased height
+    height: '60%',
     borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: 'transparent',
@@ -498,7 +496,6 @@ const styles = StyleSheet.create({
     height: '100%',
     position: 'relative',
   },
-
   halfScreenImage: {
     width: '100%',
     height: '100%',
@@ -535,16 +532,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    width: '80%', // Wider modal (90% of screen width)
-    alignSelf: 'center', // Center it horizontally
+    width: '80%',
+    alignSelf: 'center',
   },
-
   buddhaImage: {
     width: 200,
     height: 200,
     marginBottom: 16,
   },
-
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -571,9 +566,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   cardItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.07)', // ✅ Soft overlay
+    backgroundColor: 'rgba(255, 255, 255, 0.07)',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -588,34 +582,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
   cardColumn: {
     flexDirection: 'column',
     justifyContent: 'center',
   },
-
   cardRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 6,
-    minHeight: 24, // Ensures consistent row height
+    minHeight: 24,
   },
-
   cardText: {
     fontSize: 16,
-    color: '#F5F5DC', // ✅ Warm beige text
+    color: '#F5F5DC',
     fontWeight: '500',
     marginLeft: 8,
     lineHeight: 20,
   },
-
-
-
   dailyPrayWordsWrapper: {
     marginTop: 12,
     paddingHorizontal: 20,
   },
-
   prayWordsContainer: {
     marginBottom: 16,
     paddingHorizontal: 24,
@@ -632,7 +619,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-
   prayWordsLabel: {
     fontSize: 14,
     color: '#ffd700',
@@ -643,7 +629,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
-
   prayWordsText: {
     fontSize: 16,
     color: '#ffffff',
@@ -653,7 +638,14 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.8)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
-  }
-
-
+  },
+  modalExportIcon: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 10,
+    padding: 8,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: 20,
+  },
 });

@@ -33,6 +33,8 @@ export const translations = {
       alert: 'Alert',
       settings: 'Settings',
       notSet: 'Not set',
+      permissionRequired: 'Permission required',
+      photoPermissionMessage:'Allow this app to access your photos to save images'
     },
     tabs: {
       recitation: 'Recitation',
@@ -56,6 +58,8 @@ export const translations = {
       calendarView: 'Calendar',
       deleteConfirmationTitle: 'Delete Record',
       deleteConfirmationMessage: 'Are you sure you want to delete this record?',
+      imageExportSuccess: 'Image export successful',
+      imageExportFail: 'Image export failed',
     },
     settings: {
       title: 'Settings',
@@ -166,6 +170,8 @@ export const translations = {
       alert: '警报',
       settings: '设置',
       notSet: '未设置',
+      permissionRequired: '需要权限',
+      photoPermissionMessage: '允许此应用访问您的照片以保存图像'
     },
     tabs: {
       recitation: '念诵',
@@ -189,6 +195,8 @@ export const translations = {
       calendarView: '日历',
       deleteConfirmationTitle: '删除记录',
       deleteConfirmationMessage: '您确定要删除此记录吗？',
+      imageExportSuccess: '图像导出成功',
+      imageExportFail: '图像导出失败',
     },
     settings: {
       title: '设置',
@@ -297,6 +305,8 @@ export const translations = {
       alert: '警報',
       settings: '設置',
       notSet: '未設置',
+      permissionRequired: '需要權限',
+      photoPermissionMessage: '允許此應用訪問您的照片以保存圖像'
     },
     tabs: {
       recitation: '念誦',
@@ -320,6 +330,8 @@ export const translations = {
       calendarView: '日曆',
       deleteConfirmationTitle: '刪除記錄',
       deleteConfirmationMessage: '您確定要刪除此記錄嗎？',
+      imageExportSuccess: '圖像導出成功',
+      imageExportFail: '圖像導出失敗',
     },
     settings: {
       title: '設定',
@@ -428,6 +440,8 @@ export const translations = {
       alert: 'Amaran',
       settings: 'Tetapan',
       notSet: 'Tidak ditetapkan',
+      permissionRequired: 'Memerlukan kebenaran',
+      photoPermissionMessage: 'Benarkan aplikasi ini mengakses foto anda untuk menyimpan imej'
     },
     tabs: {
       recitation: 'Zikir',
@@ -451,6 +465,8 @@ export const translations = {
       calendarView: 'Kalendar',
       deleteConfirmationTitle: 'Padam Rekod',
       deleteConfirmationMessage: 'Anda pasti ingin memadam rekod ini?',
+      imageExportSuccess: 'Eksport imej berjaya',
+      imageExportFail: 'Eksport imej gagal',
     },
     settings: {
       title: 'Tetapan',
