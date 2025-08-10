@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Slider from '@react-native-community/slider';
 import { useLocalization } from '../../useLocalization';
 
 const { width } = Dimensions.get('window');
@@ -46,6 +47,8 @@ export default function SettingsScreen() {
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [showMusicPicker, setShowMusicPicker] = useState(false);
   const [prayWords, setprayWords] = useState('');
+  const [soundVolume, setSoundVolume] = useState(1); // default full volume
+
 
   const bgColors = [
     { label: t('settings.colors.beige'), value: '#eab676' },
@@ -80,6 +83,8 @@ export default function SettingsScreen() {
           if (typeof settings.showCounter === 'boolean') setshowCounter(settings.showCounter);
           if (settings.selectedMusic) setSelectedMusic(settings.selectedMusic);
           if (settings.prayWords) setprayWords(settings.prayWords);
+          if (typeof settings.soundVolume === 'number') setSoundVolume(settings.soundVolume);
+
         }
       } catch (e) {
         console.warn('Failed to load settings', e);
@@ -105,15 +110,19 @@ export default function SettingsScreen() {
           showCounter,
           selectedMusic,
           prayWords,
+          soundVolume,
+
         };
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
         DeviceEventEmitter.emit('settingsChanged', newSettings);
+        console.log('Emitting soundVolume:', soundVolume);
+        console.log('Settings saved:', newSettings);
       } catch (e) {
         console.warn('Failed to save settings', e);
       }
     };
     saveSettings();
-  }, [bgColor, language, soundEnabled, hapticsEnabled, disarrayEnabled, showCounter, selectedMusic, prayWords]);
+  }, [bgColor, language, soundEnabled, hapticsEnabled, disarrayEnabled, showCounter, selectedMusic, prayWords, soundVolume]);
 
   const confirmReset = () => {
     Alert.alert(
@@ -129,13 +138,14 @@ export default function SettingsScreen() {
               const defaultSettings = {
                 bgColor: '#000000',
                 language: 'en',
-                soundEnabled: true,
-                hapticsEnabled: true,
+                soundEnabled: true, // Reset soundEnabled to true
+                hapticsEnabled: true, // Reset haptics to true
                 frequency: 1, // Reset frequency to its default
-                disarrayEnabled: false,
-                showCounter: true,
+                disarrayEnabled: false, // Reset disarray to false
+                showCounter: true, // Reset showCounter to true
                 selectedMusic: 'dabeizhou.mp3',
                 prayWords: '', // Reset prayWords
+                soundVolume: 1, // Reset sound volume to full
               };
               await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSettings));
 
@@ -148,6 +158,7 @@ export default function SettingsScreen() {
               setshowCounter(defaultSettings.showCounter);
               setSelectedMusic(defaultSettings.selectedMusic);
               setprayWords('');
+              setSoundVolume(defaultSettings.soundVolume);
 
               // Globally emit all reset settings
               DeviceEventEmitter.emit('settingsChanged', defaultSettings);
@@ -217,21 +228,23 @@ export default function SettingsScreen() {
             </View>
           )}
 
-<View style={styles.toggleRow}>
-  <View style={styles.labelContainer}>
-    <Feather name="edit-3" size={iconSize} color={iconColor} />
-    <Text style={styles.label}>{t('settings.prayWords')|| 'Pray Words' }</Text>
-  </View>
-</View>
-<View style={styles.pickerWrapper}>
-  <TextInput
-    style={[styles.picker, { padding: 10 }]}
-    placeholder={t('settings.prayWords')}
-    placeholderTextColor="#ccc"
-    value={prayWords}
-    onChangeText={setprayWords}
-  />
-</View>
+
+
+          <View style={styles.toggleRow}>
+            <View style={styles.labelContainer}>
+              <Feather name="edit-3" size={iconSize} color={iconColor} />
+              <Text style={styles.label}>{t('settings.prayWords') || 'Pray Words'}</Text>
+            </View>
+          </View>
+          <View style={styles.pickerWrapper}>
+            <TextInput
+              style={[styles.picker, { padding: 10 }]}
+              placeholder={t('settings.prayWords')}
+              placeholderTextColor="#ccc"
+              value={prayWords}
+              onChangeText={setprayWords}
+            />
+          </View>
 
 
           {/* Auto Hit Settings Link */}
@@ -251,6 +264,28 @@ export default function SettingsScreen() {
             </View>
             <Switch value={soundEnabled} onValueChange={setSoundEnabled} trackColor={{ false: '#ccc', true: '#8B4513' }} thumbColor={soundEnabled ? '#fff' : '#888'} />
           </View>
+
+          {/* Sound Volume Slider */}
+          {soundEnabled && (<View style={styles.toggleRow}>
+            <View style={styles.labelContainer}>
+              <Feather name="sliders" size={iconSize} color={iconColor} />
+              <Text style={styles.label}>{t('settings.soundVolumeLabel') || 'Sound Volume'}</Text>
+            </View>
+            <Slider
+              style={{ width: 150 }}
+              minimumValue={0}
+              maximumValue={1}
+              step={0.05}
+              value={soundVolume}
+              onValueChange={(value) => {
+                setSoundVolume(value);
+                console.log('Playing sound set on settings page:', soundVolume);
+                DeviceEventEmitter.emit('settingsChanged', { soundVolume: value });
+              }}
+              minimumTrackTintColor="#8B4513"
+              maximumTrackTintColor="#ccc"
+            />
+          </View>)}
 
           {/* Haptics Toggle */}
           <View style={styles.toggleRow}>

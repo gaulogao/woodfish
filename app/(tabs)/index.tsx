@@ -83,6 +83,8 @@ export default function Index() {
     const NUM_BARS = 12; // or any number you like
     const waveBars = Array.from({ length: NUM_BARS }, () => useRef(new Animated.Value(0)).current);
     const prayWordsAnim = useRef(new Animated.Value(0)).current;
+    const [soundVolume, setSoundVolume] = useState(1);
+
 
 
 
@@ -121,6 +123,9 @@ export default function Index() {
         }, [])
     );
 
+useEffect(() => {
+  console.log('Sound volume updated to:', soundVolume);
+}, [soundVolume]);
 
     useEffect(() => {
         const subscription = DeviceEventEmitter.addListener('settingsChanged', (data) => {
@@ -132,6 +137,12 @@ export default function Index() {
             if (typeof data?.disarrayEnabled === 'boolean') setDisarrayEnabled(data.disarrayEnabled);
             if (data?.selectedMusic) setSelectedMusic(data.selectedMusic); // ✅ NEW
             if (typeof data?.prayWords === 'string') setPrayWords(data.prayWords);
+            if (data.soundVolume !== undefined) {
+      console.log('Updating soundVolume in index.tsx:', data.soundVolume);
+      setSoundVolume(data.soundVolume);
+      console.log('Updated soundVolume in index.tsx:', soundVolume);
+    }
+
         });
         return () => subscription.remove();
     }, []);
@@ -150,6 +161,8 @@ export default function Index() {
                     if (typeof settings.frequency === 'number') { setFrequency(settings.frequency); }
                     if (settings.selectedMusic) setSelectedMusic(settings.selectedMusic); // ✅ NEW
                     if (settings.prayWords) setPrayWords(settings.prayWords);
+                    if (typeof settings.soundVolume === 'number') setSoundVolume(settings.soundVolume);
+
                 }
             };
             loadSettings();
@@ -271,6 +284,27 @@ export default function Index() {
         }
     };
 
+const playSound = useCallback(async () => {
+  if (!soundEnabled) return;
+  try {
+    const { sound } = await Audio.Sound.createAsync(
+      require('../../assets/sound/muyu.mp3'),
+      { volume: soundVolume }
+    );
+    console.log('Playing sound with volume on index page:', soundVolume);
+    await sound.setVolumeAsync(soundVolume);
+    await sound.playAsync();
+
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (status.isLoaded && status.didJustFinish) {
+        sound.unloadAsync();
+      }
+    });
+  } catch (e) {
+    console.warn('Failed to play sound:', e);
+  }
+}, [soundEnabled, soundVolume]);
+
     const handleHit = useCallback(() => {
         Animated.sequence([
             Animated.spring(scaleAnim, {
@@ -300,7 +334,7 @@ export default function Index() {
         });
         if (prayWords) triggerPrayWordsAnimation();
 
-    }, [hapticsEnabled, soundEnabled, scaleAnim]);
+    }, [hapticsEnabled, soundEnabled, scaleAnim, playSound]);
 
 
     const triggerSuccessAnimation = (savedValue: number) => {
@@ -420,22 +454,8 @@ export default function Index() {
         };
     }, [autoHitEnabled, frequency, handleHit]);
 
-    const playSound = async () => {
-        if (!soundEnabled) return;
-        try {
-            const { sound } = await Audio.Sound.createAsync(
-                require('../../assets/sound/muyu.mp3')
-            );
-            await sound.playAsync();
-            sound.setOnPlaybackStatusUpdate((status) => {
-                if (status.isLoaded && status.didJustFinish) {
-                    sound.unloadAsync();
-                }
-            });
-        } catch (e) {
-            console.warn('Failed to play sound:', e);
-        }
-    };
+
+
 
     const handlePressIn = () => {
         handleHit();
@@ -533,7 +553,7 @@ const triggerPrayWordsAnimation = () => {
       duration: 100,
       useNativeDriver: true,
     }),
-    Animated.delay(100),
+    Animated.delay(200),
     Animated.timing(prayWordsAnim, {
       toValue: 2,
       duration: 100,
