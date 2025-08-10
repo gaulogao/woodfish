@@ -31,7 +31,9 @@ const chartWidth = width - 32;
 interface HitRecord {
   timestamp: number;
   count: number;
+  prayWords?: string; // ✅ Add this field
 }
+
 
 interface DailyHits {
   total: number;
@@ -57,6 +59,11 @@ export default function StatisticsScreen() {
   const [bgColor, setBgColor] = useState('#F5F5DC');
   const [imageLoaded, setImageLoaded] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [selectedPrayWords, setSelectedPrayWords] = useState<string | null>(null);
+  const [modalType, setModalType] = useState<'single' | 'daily' | null>(null);
+  const [selectedItem, setSelectedItem] = useState<ListHitRecord | null>(null);
+
+
 
   useFocusEffect(
     useCallback(() => {
@@ -235,7 +242,13 @@ export default function StatisticsScreen() {
         <View style={styles.chartContainer}>
           <Calendar
             markedDates={markedDates}
-            onDayPress={handleDayPress}
+            onDayPress={(day) => {
+              const dateStr = day.dateString;
+              setSelectedDate(dateStr);
+              setModalType('daily');
+              setModalVisible(true);
+            }}
+
             onMonthChange={(month) => {
               const newMonth = `${month.year}-${String(month.month).padStart(2, '0')}`;
               setSelectedMonth(newMonth);
@@ -275,7 +288,18 @@ export default function StatisticsScreen() {
           data={flattenedHits}
           keyExtractor={(item) => item.timestamp.toString()}
           renderItem={({ item }) => (
-            <View style={styles.cardItem}>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedItem(item);
+                setSelectedPrayWords(item.prayWords);
+                setSelectedDate(item.date);
+                setModalType('single');
+                setModalVisible(true);
+              }}
+
+
+              style={styles.cardItem}
+            >
               <View style={styles.cardColumn}>
                 <View style={styles.cardRow}>
                   <Feather name="calendar" size={18} color="#4A90E2" />
@@ -292,7 +316,8 @@ export default function StatisticsScreen() {
               >
                 <Feather name="trash-2" size={20} color="white" />
               </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
+
 
           )}
           ListEmptyComponent={<Text style={styles.emptyListText}>{t('statistics.noData')}</Text>}
@@ -304,7 +329,10 @@ export default function StatisticsScreen() {
         visible={modalVisible}
         transparent
         animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={() => {
+          setModalVisible(false);
+          setSelectedPrayWords(null);
+        }}
       >
         <TouchableOpacity
           style={styles.modalOverlay}
@@ -334,10 +362,43 @@ export default function StatisticsScreen() {
                   <Text style={styles.dateText}>{selectedDate}</Text>
                   <Text style={styles.modalCount}>
                     <Feather name="target" size={20} color="#ffd700" />{' '}
-                    {selectedDate ? hitData[selectedDate]?.total || 0 : 0}
+                    {modalType === 'daily'
+                      ? (selectedDate ? hitData[selectedDate]?.total || 0 : 0)
+                      : (selectedItem ? selectedItem.count || 0 : 0)}
+
+
                   </Text>
                 </View>
               )}
+              {modalType === 'single' && selectedItem?.prayWords && (
+                <View style={styles.prayWordsContainer}>
+                  <Text style={styles.prayWordsLabel}>🙏 Prayer Words</Text>
+                  <Text style={styles.prayWordsText}>
+                    “{selectedItem.prayWords}”
+                  </Text>
+                </View>
+              )}
+
+
+
+              {modalType === 'daily' && selectedDate && hitData[selectedDate]?.hits?.length > 0 && (
+                <View style={styles.dailyPrayWordsWrapper}>
+                  {hitData[selectedDate].hits.map((hit, index) => (
+                    hit.prayWords ? (
+                      <View key={index} style={styles.prayWordsContainer}>
+                        <Text style={styles.prayWordsLabel}>🕊️ Daily Prayer</Text>
+                        <Text style={styles.prayWordsText}>
+                          “{hit.prayWords}”
+                        </Text>
+                      </View>
+                    ) : null
+                  ))}
+                </View>
+              )}
+
+
+
+
             </Animated.View>
           </View>
         </TouchableOpacity>
@@ -536,4 +597,52 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     lineHeight: 20,
   },
+
+
+
+  dailyPrayWordsWrapper: {
+    marginTop: 12,
+    paddingHorizontal: 20,
+  },
+
+  prayWordsContainer: {
+    marginBottom: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#ffd700',
+    alignSelf: 'center',
+    maxWidth: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+
+  prayWordsLabel: {
+    fontSize: 14,
+    color: '#ffd700',
+    fontWeight: '600',
+    marginBottom: 6,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+
+  prayWordsText: {
+    fontSize: 16,
+    color: '#ffffff',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    lineHeight: 24,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  }
+
+
 });

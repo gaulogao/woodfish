@@ -31,9 +31,11 @@ const musicMap = {
 };
 
 interface HitRecord {
-    timestamp: number;
-    count: number;
+  timestamp: number;
+  count: number;
+  prayWords?: string; // ✅ Add this optional field
 }
+
 
 interface DailyHits {
     total: number;
@@ -344,7 +346,12 @@ export default function Index() {
             const todayData: DailyHits = allData[today] || { total: 0, hits: [] };
 
             todayData.total += count;
-            todayData.hits.push({ timestamp: Date.now(), count: count });
+            todayData.hits.push({
+  timestamp: Date.now(),
+  count: count,
+  prayWords: prayWords !== '' ? prayWords : undefined, // ✅ Save only if non-empty
+});
+
 
             allData[today] = todayData;
 
