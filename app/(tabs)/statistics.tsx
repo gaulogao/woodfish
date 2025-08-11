@@ -399,7 +399,7 @@ export default function StatisticsScreen() {
                   {hitData[selectedDate].hits.map((hit, index) => (
                     hit.prayWords ? (
                       <View key={index} style={styles.prayWordsContainer}>
-                        <Text style={styles.prayWordsLabel}>🕊️ Daily Prayer</Text>
+                        <Text style={styles.prayWordsLabel}>🕊️ {t('settings.prayWords') || 'Prayer Words'}</Text>
                         <Text style={styles.prayWordsText}>
                           “{hit.prayWords}”
                         </Text>
