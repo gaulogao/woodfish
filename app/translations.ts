@@ -476,7 +476,7 @@ export const translations = {
       bgColorLabel: 'Warna Latar Belakang',
       languageLabel: 'Bahasa',
       soundLabel: 'Maklum Balas Bunyi',
-      soundVolumeLabel: 'Kawalan Kelantangan Bunyi',
+      soundVolumeLabel: 'Kelantangan ketukan',
       hapticsLabel: 'Maklum Balas Haptik',
       resetButton: 'Tetapkan semula semua tetapan',
       resetConfirmationTitle: 'Sahkan Tetapan Semula',

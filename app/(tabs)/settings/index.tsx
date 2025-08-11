@@ -266,26 +266,29 @@ export default function SettingsScreen() {
           </View>
 
           {/* Sound Volume Slider */}
-          {soundEnabled && (<View style={styles.toggleRow}>
-            <View style={styles.labelContainer}>
-              <Feather name="sliders" size={iconSize} color={iconColor} />
-              <Text style={styles.label}>{t('settings.soundVolumeLabel') || 'Sound Volume'}</Text>
-            </View>
-            <Slider
-              style={{ width: 150 }}
-              minimumValue={0}
-              maximumValue={1}
-              step={0.05}
-              value={soundVolume}
-              onValueChange={(value) => {
-                setSoundVolume(value);
-                console.log('Playing sound set on settings page:', soundVolume);
-                DeviceEventEmitter.emit('settingsChanged', { soundVolume: value });
-              }}
-              minimumTrackTintColor="#8B4513"
-              maximumTrackTintColor="#ccc"
-            />
-          </View>)}
+          {soundEnabled && (
+  <View style={[styles.toggleRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+    <View style={styles.labelContainer}>
+      <Feather name="sliders" size={iconSize} color={iconColor} />
+      <Text style={styles.label}>{t('settings.soundVolumeLabel') || 'Sound Volume'}</Text>
+    </View>
+    <Slider
+      style={{ width: '100%', marginTop: 10 }}
+      minimumValue={0}
+      maximumValue={1}
+      step={0.05}
+      value={soundVolume}
+      onValueChange={(value) => {
+        setSoundVolume(value);
+        console.log('Playing sound set on settings page:', soundVolume);
+        DeviceEventEmitter.emit('settingsChanged', { soundVolume: value });
+      }}
+      minimumTrackTintColor="#8B4513"
+      maximumTrackTintColor="#ccc"
+    />
+  </View>
+)}
+
 
           {/* Haptics Toggle */}
           <View style={styles.toggleRow}>
