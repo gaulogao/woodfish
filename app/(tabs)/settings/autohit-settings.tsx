@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
+import { Slider } from '@react-native-assets/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Slider from '@react-native-community/slider';
+
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
@@ -270,17 +271,28 @@ export default function AutoHitSettingsScreen() {
                         </Text>
                     </View>
                     <Slider
-                        style={styles.slider}
-                        minimumValue={1}
-                        maximumValue={5}
-                        step={1}
                         value={frequency}
                         onValueChange={setFrequency}
                         onSlidingComplete={handleFrequencyChange}
-                        minimumTrackTintColor="#8B4513"
-                        maximumTrackTintColor="#ccc"
+                        minimumValue={1}
+                        maximumValue={5}
+                        step={1}
+                        trackHeight={12}
+                        trackStyle={{
+                            backgroundColor: '#ccc',
+                            borderRadius: 0,
+                        }}
+                        minTrackStyle={{
+                            backgroundColor: '#8B4513',
+                            borderRadius: 0,
+                        }}
                         thumbTintColor="#4B3F38"
+                        thumbSize={25}
+                        slideOnTap={true}
                     />
+
+
+
                 </View>
 
                 {/* Custom Date Time Picker Modal */}

@@ -123,10 +123,6 @@ export default function Index() {
         }, [])
     );
 
-useEffect(() => {
-  console.log('Sound volume updated to:', soundVolume);
-}, [soundVolume]);
-
     useEffect(() => {
         const subscription = DeviceEventEmitter.addListener('settingsChanged', (data) => {
             if (data?.bgColor) setBgColor(data.bgColor);
@@ -138,9 +134,7 @@ useEffect(() => {
             if (data?.selectedMusic) setSelectedMusic(data.selectedMusic); // ✅ NEW
             if (typeof data?.prayWords === 'string') setPrayWords(data.prayWords);
             if (data.soundVolume !== undefined) {
-      console.log('Updating soundVolume in index.tsx:', data.soundVolume);
       setSoundVolume(data.soundVolume);
-      console.log('Updated soundVolume in index.tsx:', soundVolume);
     }
 
         });
@@ -291,7 +285,6 @@ const playSound = useCallback(async () => {
       require('../../assets/sound/muyu.mp3'),
       { volume: soundVolume }
     );
-    console.log('Playing sound with volume on index page:', soundVolume);
     await sound.setVolumeAsync(soundVolume);
     await sound.playAsync();
 

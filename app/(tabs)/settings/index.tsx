@@ -21,8 +21,11 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Slider from '@react-native-community/slider';
+
+import { Slider } from '@react-native-assets/slider';
+
 import { useLocalization } from '../../useLocalization';
+
 
 const { width } = Dimensions.get('window');
 
@@ -115,8 +118,6 @@ export default function SettingsScreen() {
         };
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
         DeviceEventEmitter.emit('settingsChanged', newSettings);
-        console.log('Emitting soundVolume:', soundVolume);
-        console.log('Settings saved:', newSettings);
       } catch (e) {
         console.warn('Failed to save settings', e);
       }
@@ -267,27 +268,62 @@ export default function SettingsScreen() {
 
           {/* Sound Volume Slider */}
           {soundEnabled && (
-  <View style={[styles.toggleRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
-    <View style={styles.labelContainer}>
-      <Feather name="sliders" size={iconSize} color={iconColor} />
-      <Text style={styles.label}>{t('settings.soundVolumeLabel') || 'Sound Volume'}</Text>
-    </View>
-    <Slider
-      style={{ width: '100%', marginTop: 10 }}
-      minimumValue={0}
-      maximumValue={1}
-      step={0.05}
-      value={soundVolume}
-      onValueChange={(value) => {
-        setSoundVolume(value);
-        console.log('Playing sound set on settings page:', soundVolume);
-        DeviceEventEmitter.emit('settingsChanged', { soundVolume: value });
-      }}
-      minimumTrackTintColor="#8B4513"
-      maximumTrackTintColor="#ccc"
-    />
-  </View>
-)}
+            <View style={[styles.toggleRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+              <View style={styles.labelContainer}>
+                <Feather name="sliders" size={iconSize} color={iconColor} />
+                <Text style={styles.label}>{t('settings.soundVolumeLabel') || 'Sound Volume'}</Text>
+              </View>
+              <View style={{ width: '100%', paddingHorizontal: 20 }}>
+                <Slider
+                  value={soundVolume}
+                  onValueChange={(value) => {
+                    setSoundVolume(value);
+                    DeviceEventEmitter.emit('settingsChanged', { soundVolume: value });
+                  }}
+                  minimumValue={0}
+                  maximumValue={1}
+                  step={0.05}
+                  trackHeight={12}
+                  trackStyle={{
+                    backgroundColor: 'transparent',
+                    borderRadius: 0,
+                    flexDirection: 'row',
+                  }}
+                  minTrackStyle={{
+                    backgroundColor: '#8B4513',
+                    borderRadius: 0,
+                  }}
+                  thumbTintColor="#4B3F38"
+                  thumbSize={20}
+                  slideOnTap={true}
+                  CustomThumb={({ value }) => (
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        backgroundColor: '#4B3F38',
+                        borderRadius: 2,
+                      }}
+                    />
+                  )}
+                  StepMarker={({ index }) => (
+                    <View
+                      style={{
+                        width: 4,
+                        height: 12,
+                        backgroundColor: '#fff',
+                        marginHorizontal: 4,
+                      }}
+                    />
+                  )}
+                />
+              </View>
+
+
+
+
+            </View>
+          )}
 
 
           {/* Haptics Toggle */}
