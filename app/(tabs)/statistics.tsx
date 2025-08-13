@@ -448,9 +448,9 @@ export default function StatisticsScreen() {
               )}
               {modalType === 'single' && selectedItem?.prayWords && (
                 <View style={styles.prayWordsContainer}>
-                  <Text style={styles.prayWordsLabel}>🙏 {t('settings.prayWords') || 'Prayer Words'}</Text>
+                  <Text style={styles.prayWordsLabel}>🙏{'\n'} {`${t('settings.prayWords') || 'Prayer Words'}`.split('').join('\n')}</Text>
                   <Text style={styles.prayWordsText}>
-                    “{selectedItem.prayWords}”
+                    {`“${selectedItem.prayWords}”`.split('').join('\n')}
                   </Text>
                 </View>
               )}
@@ -459,9 +459,9 @@ export default function StatisticsScreen() {
                   {hitData[selectedDate].hits.map((hit, index) => (
                     hit.prayWords ? (
                       <View key={index} style={styles.prayWordsContainer}>
-                        <Text style={styles.prayWordsLabel}>🕊️ {t('settings.prayWords') || 'Prayer Words'}</Text>
+                        <Text style={styles.prayWordsLabel}>🕊️{'\n'} {`${t('settings.prayWords') || 'Prayer Words'}`.split('').join('\n')}</Text>
                         <Text style={styles.prayWordsText}>
-                          “{hit.prayWords}”
+                          {`“${hit.prayWords}”`.split('').join('\n')}
                         </Text>
                       </View>
                     ) : null
@@ -596,17 +596,23 @@ const styles = StyleSheet.create({
   },
   dailyPrayWordsWrapper: {
     marginTop: 12,
-    paddingHorizontal: 20,
+    marginLeft: 1,
+    paddingHorizontal: 5,
+    flexDirection: 'row',         // ✅ Add this
+    flexWrap: 'wrap',             // ✅ Allow wrapping if needed
+    alignItems: 'flex-start',     // ✅ Align to top
   },
   prayWordsContainer: {
     marginBottom: 16,
+    marginLeft: 5,
+    marginTop: 8,
     paddingHorizontal: 24,
     paddingVertical: 14,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#ffd700',
-    alignSelf: 'center',
+    alignSelf: 'flex-start',
     maxWidth: '100%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -628,7 +634,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#ffffff',
     fontStyle: 'italic',
-    textAlign: 'center',
+    textAlign: 'left',
     lineHeight: 24,
     textShadowColor: 'rgba(0, 0, 0, 0.8)',
     textShadowOffset: { width: 0, height: 1 },
