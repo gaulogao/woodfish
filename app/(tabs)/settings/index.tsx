@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: width * 0.08,
     fontWeight: 'bold',
-    color: '#4B3F38',
+    color: '#fff',
     textDecorationLine: 'underline',
     marginLeft: 12,
   },

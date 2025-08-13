@@ -29,6 +29,7 @@ import { useLocalization } from '../useLocalization';
 
 const STORAGE_KEY = 'daily_hits';
 const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 const chartWidth = width - 32;
 
 // Define the data structures
@@ -203,7 +204,7 @@ export default function StatisticsScreen() {
     .sort((a, b) => b.timestamp - a.timestamp);
 
   const iconColor = "#4B3F38";
-  const iconSize = width * 0.055;
+  const iconSize = width * 0.08;
 
   const handleExportImage = async () => {
     if (viewRef.current) {
@@ -448,9 +449,9 @@ export default function StatisticsScreen() {
               )}
               {modalType === 'single' && selectedItem?.prayWords && (
                 <View style={styles.prayWordsContainer}>
-                  <Text style={styles.prayWordsLabel}>🙏{'\n'} {`${t('settings.prayWords') || 'Prayer Words'}`.split('').join('\n')}</Text>
+                  <Text style={styles.prayWordsLabel}>🙏 {t('settings.prayWords') || 'Prayer Words'}</Text>
                   <Text style={styles.prayWordsText}>
-                    {`“${selectedItem.prayWords}”`.split('').join('\n')}
+                    “{selectedItem.prayWords}”
                   </Text>
                 </View>
               )}
@@ -459,9 +460,9 @@ export default function StatisticsScreen() {
                   {hitData[selectedDate].hits.map((hit, index) => (
                     hit.prayWords ? (
                       <View key={index} style={styles.prayWordsContainer}>
-                        <Text style={styles.prayWordsLabel}>🕊️{'\n'} {`${t('settings.prayWords') || 'Prayer Words'}`.split('').join('\n')}</Text>
+                        <Text style={styles.prayWordsLabel}>🕊️ {t('settings.prayWords') || 'Prayer Words'}</Text>
                         <Text style={styles.prayWordsText}>
-                          {`“${hit.prayWords}”`.split('').join('\n')}
+                          “{hit.prayWords}”
                         </Text>
                       </View>
                     ) : null
@@ -492,9 +493,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: width * 0.08,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   // ✅ NEW: Style for the segmented control container
   segmentedControlContainer: {
@@ -531,6 +532,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'relative',
+    backgroundColor: '#000000', // ✅ Add fallback background color
   },
   halfScreenImage: {
     width: '100%',
@@ -595,13 +597,14 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   dailyPrayWordsWrapper: {
-    marginTop: 12,
-    marginLeft: 1,
-    paddingHorizontal: 5,
-    flexDirection: 'row',         // ✅ Add this
-    flexWrap: 'wrap',             // ✅ Allow wrapping if needed
-    alignItems: 'flex-start',     // ✅ Align to top
-  },
+  marginTop: 12,
+  paddingHorizontal: 5,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'center',     // ✅ Center horizontally
+  alignItems: 'center',         // ✅ Center vertically
+},
+
   prayWordsContainer: {
     marginBottom: 16,
     marginLeft: 5,
@@ -612,7 +615,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#ffd700',
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     maxWidth: '100%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
