@@ -51,7 +51,10 @@
     "react-native-svg": "15.11.2",
     "react-native-view-shot": "^4.0.3",
     "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "@react-native-segmented-control/segmented-control": "2.5.7",
+    "expo-file-system": "~18.1.11",
+    "expo-intent-launcher": "~12.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

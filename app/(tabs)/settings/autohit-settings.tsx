@@ -40,7 +40,7 @@ export default function AutoHitSettingsScreen() {
     const [stopDuration, setStopDuration] = useState<number>(0); // Default to 0 minutes
     const [stopTimestamp, setStopTimestamp] = useState<number | null>(null);
     const [frequency, setFrequency] = useState<number>(1);
-    const [bgColor, setBgColor] = useState<string>('#F5F5DC');
+    const [bgColor, setBgColor] = useState<string>('#000'); // Default background color
     const [showDateTimePickerModal, setShowDateTimePickerModal] = useState<boolean>(false);
     const [tempDate, setTempDate] = useState<Date>(new Date());
     const navigation = useNavigation();

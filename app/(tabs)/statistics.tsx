@@ -1,8 +1,11 @@
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SegmentedControl from '@react-native-segmented-control/segmented-control'; // ✅ NEW: Import SegmentedControl
 import { useFocusEffect } from '@react-navigation/native';
+import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import * as Sharing from 'expo-sharing';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,8 +15,8 @@ import {
   Image,
   Modal,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
-  Switch,
   Text,
   TouchableOpacity,
   View
@@ -23,7 +26,6 @@ import { BarChart } from 'react-native-chart-kit';
 import ViewShot from 'react-native-view-shot';
 import { LanguageCode } from '../translations';
 import { useLocalization } from '../useLocalization';
-
 
 const STORAGE_KEY = 'daily_hits';
 const { width } = Dimensions.get('window');
@@ -53,12 +55,12 @@ interface ListHitRecord extends HitRecord {
 
 export default function StatisticsScreen() {
   const { t, language } = useLocalization();
-  const [view, setView] = useState<'list' | 'calendar'>('calendar');
+  const [view, setView] = useState<'calendar' | 'list'>('calendar'); // ✅ State remains the same
   const [hitData, setHitData] = useState<AllHitsData>({});
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [bgColor, setBgColor] = useState('#F5F5DC');
+  const [bgColor, setBgColor] = useState('#000');
   const [imageLoaded, setImageLoaded] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [selectedPrayWords, setSelectedPrayWords] = useState<string | null>(null);
@@ -181,6 +183,8 @@ export default function StatisticsScreen() {
   const handleDayPress = (day: { dateString: string }) => {
     const date = day.dateString;
     if (hitData[date] && hitData[date].total > 0) {
+      const index = Math.floor(Math.random() * buddhaImages.length);
+      setSelectedImage(buddhaImages[index]);
       setSelectedDate(date);
       setModalType('daily');
       setModalVisible(true);
@@ -210,13 +214,9 @@ export default function StatisticsScreen() {
           return;
         }
 
-        // This is the capture logic that might be crashing.
-        // The library needs to be properly linked.
         const uri = await ViewShot.captureRef(viewRef, {
           format: 'jpg',
           quality: 0.9,
-          width: 500,
-          height: 800,
         });
 
         await MediaLibrary.saveToLibraryAsync(uri);
@@ -225,8 +225,8 @@ export default function StatisticsScreen() {
           t('statistics.imageExportSuccess'),
           [
             {
-              text: t('common.confirm'), // This will be your localized label
-              onPress: () => { }, // Optional callback
+              text: t('common.confirm'),
+              onPress: () => { },
             },
           ]
         );
@@ -239,31 +239,81 @@ export default function StatisticsScreen() {
     }
   };
 
+  const handleShareImage = async () => {
+    if (viewRef.current) {
+      try {
+        const uri = await ViewShot.captureRef(viewRef, {
+          format: 'jpg',
+          quality: 0.9,
+        });
+
+        const localUri = `${FileSystem.cacheDirectory}shared-image.jpg`;
+        await FileSystem.copyAsync({ from: uri, to: localUri });
+
+        const canShare = await Sharing.isAvailableAsync();
+        if (!canShare) {
+          Alert.alert(t('common.error'), t('statistics.shareNotAvailable'));
+          return;
+        }
+
+        // ✅ This is where you share the image
+        await Sharing.shareAsync(localUri);
+
+      } catch (error) {
+        console.error('Failed to share image', error);
+        Alert.alert(t('common.error'), t('statistics.imageShareFail'));
+      }
+    } else {
+      Alert.alert('Error', 'Modal content is not ready to be shared. Please try again.');
+    }
+  };
+
+  const buddhaImages = [
+    require('../../assets/images/buddha/buddha-1.png'),
+    require('../../assets/images/buddha/buddha-2.png'),
+    require('../../assets/images/buddha/buddha-3.png'),
+    require('../../assets/images/buddha/buddha-4.png'),
+    require('../../assets/images/buddha/buddha-5.png'),
+    require('../../assets/images/buddha/buddha-6.png'),
+    require('../../assets/images/buddha/buddha-7.png'),
+    require('../../assets/images/buddha/buddha-8.png'),
+    require('../../assets/images/buddha/buddha-9.png'),
+    require('../../assets/images/buddha/buddha-10.png'),
+    require('../../assets/images/buddha/buddha-11.png'),
+  ];
+  const [selectedImage, setSelectedImage] = useState(buddhaImages[0]);
+
+
+  const randomImage = useMemo(() => {
+    const index = Math.floor(Math.random() * buddhaImages.length);
+    return buddhaImages[index];
+  }, []);
+
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
+      {/* ✅ MODIFIED: The header now uses the SegmentedControl */}
       <View style={styles.headerRow}>
         <Text style={styles.title}><Feather name="bar-chart-2" size={iconSize} color={iconColor} />{t('statistics.title')}</Text>
-        <View style={styles.switchContainer}>
-          <Feather name="calendar" size={20} color="#333" />
-          <Switch
-            value={view === 'list'}
-            onValueChange={(val) => setView(val ? 'list' : 'calendar')}
-            style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-          />
-          <Feather name="list" size={20} color="#333" />
-        </View>
+      </View>
+      <View style={styles.segmentedControlContainer}>
+        <SegmentedControl
+          values={[t('statistics.calendarView') || 'Calendar', t('statistics.listView') || 'List']}
+          selectedIndex={view === 'calendar' ? 0 : 1}
+          onChange={(event) => {
+            setView(event.nativeEvent.selectedSegmentIndex === 0 ? 'calendar' : 'list');
+          }}
+          tintColor="#8B4513"
+          fontStyle={{ color: '#F5F5DC' }}
+          activeFontStyle={{ color: '#4B3F38' }}
+        />
       </View>
 
       {view === 'calendar' ? (
-        <View style={styles.chartContainer}>
+        <ScrollView contentContainerStyle={styles.chartContainer}>
           <Calendar
             markedDates={markedDates}
-            onDayPress={(day) => {
-              const dateStr = day.dateString;
-              setSelectedDate(dateStr);
-              setModalType('daily');
-              setModalVisible(true);
-            }}
+            onDayPress={handleDayPress}
 
             onMonthChange={(month) => {
               const newMonth = `${month.year}-${String(month.month).padStart(2, '0')}`;
@@ -297,7 +347,7 @@ export default function StatisticsScreen() {
             }}
             style={{ borderRadius: 12, paddingVertical: 8, elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4 }}
           />
-        </View>
+        </ScrollView>
       ) : (
         <FlatList
           contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}
@@ -306,12 +356,15 @@ export default function StatisticsScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => {
+                const index = Math.floor(Math.random() * buddhaImages.length);
+                setSelectedImage(buddhaImages[index]);
                 setSelectedItem(item);
                 setSelectedPrayWords(item.prayWords);
                 setSelectedDate(item.date);
                 setModalType('single');
                 setModalVisible(true);
               }}
+
               style={styles.cardItem}
             >
               <View style={styles.cardColumn}>
@@ -355,15 +408,22 @@ export default function StatisticsScreen() {
               style={styles.modalExportIcon}
               onPress={handleExportImage}
             >
-              <Feather name="share" size={24} color="#fff" />
+              <Feather name="download" size={24} color="#fff" />
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalExportIcon, { right: 60 }]}
+              onPress={handleShareImage}
+            >
+              <Feather name="share-2" size={24} color="#fff" />
+            </TouchableOpacity>
+
             <Animated.View style={[styles.modalInnerContent, { opacity: fadeAnim }]} ref={viewRef}>
 
               {!imageLoaded && (
                 <ActivityIndicator size="small" color="#ffd700" />
               )}
               <Image
-                source={require('../../assets/images/buddha-bg.png')}
+                source={selectedImage}
                 style={styles.halfScreenImage}
                 resizeMode="cover"
                 onLoad={() => {
@@ -412,7 +472,6 @@ export default function StatisticsScreen() {
           </View>
         </TouchableOpacity>
       </Modal>
-
     </SafeAreaView>
   );
 }
@@ -424,11 +483,10 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginTop: 20, // Add margin to separate from the segmented control
   },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center', // Center the title
     alignItems: 'center',
     paddingHorizontal: 16,
     marginBottom: 16,
@@ -438,32 +496,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
   },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
-    borderRadius: 15,
-    paddingHorizontal: 6,
-  },
-  listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
+  // ✅ NEW: Style for the segmented control container
+  segmentedControlContainer: {
+    paddingHorizontal: 20,
     marginBottom: 10,
-    backgroundColor: '#403220',
-    borderRadius: 12,
-    elevation: 3,
-    shadowColor: '#fff',
-    shadowOpacity: 0.8,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  listItemText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '500',
-    marginBottom: 4,
   },
   deleteButton: {
     backgroundColor: '#e74c3c',
@@ -524,47 +560,6 @@ const styles = StyleSheet.create({
     textShadowColor: '#000',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    margin: 20,
-    padding: 20,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '80%',
-    alignSelf: 'center',
-  },
-  buddhaImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 16,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  modalText: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 16,
-  },
-  closeButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 20,
-  },
-  closeText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   cardItem: {
     backgroundColor: 'rgba(255, 255, 255, 0.07)',

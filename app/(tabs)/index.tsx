@@ -327,7 +327,7 @@ const playSound = useCallback(async () => {
         });
         if (prayWords) triggerPrayWordsAnimation();
 
-    }, [hapticsEnabled, soundEnabled, scaleAnim, playSound]);
+    }, [hapticsEnabled, soundEnabled, scaleAnim, playSound, prayWords]);
 
 
     const triggerSuccessAnimation = (savedValue: number) => {
@@ -349,7 +349,7 @@ const playSound = useCallback(async () => {
                     useNativeDriver: true,
                 }),
             ]),
-            Animated.delay(1200),
+            Animated.delay(200),
             Animated.timing(fadeAnim, {
                 toValue: 0,
                 duration: 500,

@@ -7,7 +7,7 @@ import { DeviceEventEmitter, StatusBar } from 'react-native';
 import { useLocalization } from '../useLocalization';
 
 export default function TabLayout() {
-  const [bgColor, setBgColor] = useState('#F5F5DC');
+  const [bgColor, setBgColor] = useState('#000');
   const { t } = useLocalization();
 
   const loadSettings = async () => {

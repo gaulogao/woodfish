@@ -22,7 +22,10 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.lnlsolutions.woodfish",
-      "permissions": ["WRITE_EXTERNAL_STORAGE", "READ_EXTERNAL_STORAGE"]
+      "permissions": [
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -34,9 +37,8 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
+          "image": "./assets/images/splash.png",
+          "resizeMode": "cover",
           "backgroundColor": "#ffffff"
         }
       ],
