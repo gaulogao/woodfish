@@ -207,8 +207,8 @@ export default function AutoHitSettingsScreen() {
                     <Switch
                         value={neverStopEnabled}
                         onValueChange={handleNeverStopChange}
-                        trackColor={{ false: '#ccc', true: '#4B3F38' }}
-                        thumbColor={neverStopEnabled ? '#fff' : '#888'}
+                        trackColor={{ false: '#ccc', true: '#81b0ff' }}
+                        thumbColor={neverStopEnabled ? '#4CAF50' : '#f4f3f4'}
                     />
                 </View>
 
