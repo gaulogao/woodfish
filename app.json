@@ -39,7 +39,8 @@
         {
           "image": "./assets/images/splash.png",
           "resizeMode": "cover",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "orientation": "portrait"
         }
       ],
       [

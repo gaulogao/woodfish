@@ -478,9 +478,9 @@ export default function StatisticsScreen() {
               )}
             </Animated.View>
             <View style={styles.modalButtonRow}>
-              <TouchableOpacity style={styles.modalExportIcon} onPress={handleExportImage}>
+              {/*<TouchableOpacity style={styles.modalExportIcon} onPress={handleExportImage}>
                 <Feather name="download" size={24} color="#fff" />
-              </TouchableOpacity>
+              </TouchableOpacity>*/}
               <TouchableOpacity style={styles.modalExportIcon} onPress={handleShareImage}>
                 <Feather name="share-2" size={24} color="#fff" />
               </TouchableOpacity>

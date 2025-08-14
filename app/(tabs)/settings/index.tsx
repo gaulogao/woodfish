@@ -1,5 +1,4 @@
 import { Feather } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -23,7 +22,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Slider } from '@react-native-assets/slider';
-
+import RNPickerSelect from 'react-native-picker-select';
 import { useLocalization } from '../../useLocalization';
 
 
@@ -197,9 +196,23 @@ export default function SettingsScreen() {
           </TouchableOpacity>
           {showColorPicker && (
             <View style={styles.pickerWrapper}>
-              <Picker selectedValue={bgColor} onValueChange={setBgColor} mode="dropdown" style={styles.picker} dropdownIconColor="#4B3F38">
-                {bgColors.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#fff" />)}
-              </Picker>
+              <RNPickerSelect
+                value={bgColor}
+                onValueChange={setBgColor}
+                items={bgColors}
+                useNativeAndroidPickerStyle={false}
+                placeholder={{}} // 👈 disables the default "Select an item..."
+                style={{
+                  inputIOS: styles.pickerText,
+                  inputAndroid: styles.pickerText,
+                  iconContainer: {
+                    top: 12,
+                    right: 12,
+                  },
+                }}
+                Icon={() => <Feather name="chevron-down" size={iconSize * 0.8} color="#F5F5DC" />}
+
+              />
             </View>
           )}
 
@@ -210,11 +223,25 @@ export default function SettingsScreen() {
           </TouchableOpacity>
           {showLanguagePicker && (
             <View style={styles.pickerWrapper}>
-              <Picker selectedValue={language} onValueChange={setLanguage} mode="dropdown" style={styles.picker} dropdownIconColor="#4B3F38">
-                {languages.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#fff" />)}
-              </Picker>
+              <RNPickerSelect
+                value={language}
+                onValueChange={setLanguage}
+                items={languages}
+                useNativeAndroidPickerStyle={false}
+                placeholder={{}} // 👈 disables default "Select an item..."
+                style={{
+                  inputIOS: styles.pickerText,
+                  inputAndroid: styles.pickerText,
+                  iconContainer: {
+                    top: 12,
+                    right: 12,
+                  },
+                }}
+                Icon={() => <Feather name="chevron-down" size={iconSize * 0.8} color="#F5F5DC" />}
+              />
             </View>
           )}
+
 
           {/* Music Picker */}
           <TouchableOpacity style={styles.sectionHeader} onPress={() => toggleSection(setShowMusicPicker)}>
@@ -223,13 +250,24 @@ export default function SettingsScreen() {
           </TouchableOpacity>
           {showMusicPicker && (
             <View style={styles.pickerWrapper}>
-              <Picker selectedValue={selectedMusic} onValueChange={setSelectedMusic} mode="dropdown" style={styles.picker} dropdownIconColor="#4B3F38">
-                {musicOptions.map((item) => <Picker.Item key={item.value} label={item.label} value={item.value} color="#fff" />)}
-              </Picker>
+              <RNPickerSelect
+                value={selectedMusic}
+                onValueChange={setSelectedMusic}
+                items={musicOptions}
+                useNativeAndroidPickerStyle={false}
+                placeholder={{}} // 👈 removes default "Select an item..."
+                style={{
+                  inputIOS: styles.pickerText,
+                  inputAndroid: styles.pickerText,
+                  iconContainer: {
+                    top: 12,
+                    right: 12,
+                  },
+                }}
+                Icon={() => <Feather name="chevron-down" size={iconSize * 0.8} color="#F5F5DC" />}
+              />
             </View>
           )}
-
-
 
           <View style={styles.toggleRow}>
             <View style={styles.labelContainer}>
@@ -445,6 +483,14 @@ const styles = StyleSheet.create({
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  pickerText: {
+    fontSize: width * 0.045,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    color: '#F5F5DC', // Warm beige text
+    backgroundColor: 'rgba(255,255,255,0.07)', // Dimmed background
+    borderRadius: 10,
   },
 
 });
