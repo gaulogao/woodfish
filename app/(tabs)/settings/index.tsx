@@ -241,7 +241,7 @@ export default function SettingsScreen() {
             <TextInput
               style={[styles.picker, { padding: 10 }]}
               placeholder={t('settings.prayWords')}
-              placeholderTextColor="#ccc"
+              placeholderTextColor="#fff"
               value={prayWords}
               onChangeText={setprayWords}
             />

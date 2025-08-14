@@ -1,6 +1,5 @@
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SegmentedControl from '@react-native-segmented-control/segmented-control'; // ✅ NEW: Import SegmentedControl
 import { useFocusEffect } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
@@ -298,17 +297,36 @@ export default function StatisticsScreen() {
         <Text style={styles.title}><Feather name="bar-chart-2" size={iconSize} color={iconColor} />{t('statistics.title')}</Text>
       </View>
       <View style={styles.segmentedControlContainer}>
-        <SegmentedControl
-          values={[t('statistics.calendarView') || 'Calendar', t('statistics.listView') || 'List']}
-          selectedIndex={view === 'calendar' ? 0 : 1}
-          onChange={(event) => {
-            setView(event.nativeEvent.selectedSegmentIndex === 0 ? 'calendar' : 'list');
-          }}
-          tintColor="#8B4513"
-          fontStyle={{ color: '#F5F5DC' }}
-          activeFontStyle={{ color: '#4B3F38' }}
-        />
+        <View style={styles.customSegmentedControl}>
+          {[
+            { key: 'calendar', label: t('statistics.calendarView') || 'Calendar', icon: 'calendar' },
+            { key: 'list', label: t('statistics.listView') || 'List', icon: 'list' },
+          ].map((tab) => {
+            const isActive = view === tab.key;
+            return (
+              <TouchableOpacity
+                key={tab.key}
+                style={[
+                  styles.segmentButton,
+                  { backgroundColor: isActive ? '#8B4513' : '#F5F5DC' },
+                ]}
+                onPress={() => setView(tab.key as 'calendar' | 'list')}
+              >
+                <Feather
+                  name={tab.icon}
+                  size={18}
+                  color={isActive ? '#F5F5DC' : '#4B3F38'}
+                  style={{ marginRight: 6 }}
+                />
+                <Text style={{ color: isActive ? '#F5F5DC' : '#4B3F38', fontWeight: '600' }}>
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
+
 
       {view === 'calendar' ? (
         <ScrollView contentContainerStyle={styles.chartContainer}>
@@ -405,18 +423,7 @@ export default function StatisticsScreen() {
           onPress={() => setModalVisible(false)}
         >
           <View style={styles.halfScreenModal}>
-            <TouchableOpacity
-              style={styles.modalExportIcon}
-              onPress={handleExportImage}
-            >
-              <Feather name="download" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modalExportIcon, { right: 60 }]}
-              onPress={handleShareImage}
-            >
-              <Feather name="share-2" size={24} color="#fff" />
-            </TouchableOpacity>
+
 
             <Animated.View style={[styles.modalInnerContent, { opacity: fadeAnim }]} ref={viewRef}>
 
@@ -470,6 +477,14 @@ export default function StatisticsScreen() {
                 </View>
               )}
             </Animated.View>
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity style={styles.modalExportIcon} onPress={handleExportImage}>
+                <Feather name="download" size={24} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalExportIcon} onPress={handleShareImage}>
+                <Feather name="share-2" size={24} color="#fff" />
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -527,12 +542,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  modalInnerContent: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-    backgroundColor: '#000000', // ✅ Add fallback background color
   },
   halfScreenImage: {
     width: '100%',
@@ -597,13 +606,13 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   dailyPrayWordsWrapper: {
-  marginTop: 12,
-  paddingHorizontal: 5,
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  justifyContent: 'center',     // ✅ Center horizontally
-  alignItems: 'center',         // ✅ Center vertically
-},
+    marginTop: 12,
+    paddingHorizontal: 5,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',     // ✅ Center horizontally
+    alignItems: 'center',         // ✅ Center vertically
+  },
 
   prayWordsContainer: {
     marginBottom: 16,
@@ -643,13 +652,44 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
-  modalExportIcon: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    zIndex: 10,
-    padding: 8,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderRadius: 20,
+  modalInnerContent: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    backgroundColor: '#000000',
   },
+
+  modalButtonRow: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+
+
+  modalExportIcon: {
+    padding: 10,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 24,
+    marginLeft: 10,
+  },
+
+
+  customSegmentedControl: {
+    flexDirection: 'row',
+    borderRadius: 8,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#8B4513',
+  },
+  segmentButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+  },
+
 });
