@@ -653,7 +653,8 @@ const triggerPrayWordsAnimation = () => {
                         />
                     </TouchableWithoutFeedback>
 
-                    {(isMusicPlaying || showMusicButton) && (
+                    {/*{(isMusicPlaying || showMusicButton) && (*/}
+                    {true && (
                         <TouchableOpacity
                             style={[
                                 styles.musicButton,
@@ -667,7 +668,7 @@ const triggerPrayWordsAnimation = () => {
                         >
                             <Feather
                                 style={styles.musicIcon}
-                                name={isMusicPlaying ? 'pause-circle' : 'play-circle'}
+                                name={isMusicPlaying ? 'pause' : 'music'}
                                 size={24}
                                 color={isMusicPlaying ? '#4CAF50' : '#8B4513'}
                             />
