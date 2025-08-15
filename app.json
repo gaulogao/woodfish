@@ -8,6 +8,11 @@
     "scheme": "woodfish",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.lnlsolutions.woodfish",
@@ -16,9 +21,11 @@
       }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+
+      "splash": {
+        "image": "./assets/images/splash-android.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.lnlsolutions.woodfish",
@@ -34,15 +41,6 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash.png",
-          "resizeMode": "cover",
-          "backgroundColor": "#ffffff",
-          "orientation": "portrait"
-        }
-      ],
       [
         "expo-media-library",
         {

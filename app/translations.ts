@@ -46,7 +46,7 @@ export const translations = {
       resetButton: 'Reset',
       countLabel: 'Count:',
       totalLabel: 'Total:',
-      autoHitToggle: 'Auto',
+      autoHitToggle: 'Auto hit',
       frequencyLabel: 'Frequency:',
     },
     statistics: {
@@ -73,7 +73,7 @@ export const translations = {
       resetConfirmationMessage: 'Are you sure you want to reset all settings?',
       autohit: 'Auto Hit',
       autohitTitle: 'Auto Hit Settings',
-      autoHitToggle: 'Auto Hit',
+      autoHitToggle: 'Auto hit',
       frequencyLabel: 'Auto Hit Frequency',
       prayWords: 'Pray Words',
       subautohit: {
@@ -184,7 +184,7 @@ export const translations = {
       resetButton: '重置',
       countLabel: '计数：',
       totalLabel: '总计：',
-      autoHitToggle: '自动',
+      autoHitToggle: '自动敲击',
       frequencyLabel: '频率：',
     },
     statistics: {
@@ -211,7 +211,7 @@ export const translations = {
       resetConfirmationMessage: '您确定要重置所有设置吗？',
       autohitTitle: '自动敲击设置',
       autohit: '自动敲击',
-      autoHitToggle: '自动念诵',
+      autoHitToggle: '自动敲击',
       frequencyLabel: '自敲频率',
       prayWords: '念诵词',
       subautohit: {
@@ -320,7 +320,7 @@ export const translations = {
       resetButton: '重置',
       countLabel: '計數：',
       totalLabel: '總計：',
-      autoHitToggle: '自動',
+      autoHitToggle: '自動敲擊',
       frequencyLabel: '頻率：',
     },
     statistics: {
@@ -347,7 +347,7 @@ export const translations = {
       resetConfirmationMessage: '您確定要重設所有設定嗎？',
       autohitTitle: '自動敲擊設定',
       autohit: '自動敲擊',
-      autoHitToggle: '自動念誦',
+      autoHitToggle: '自動敲擊',
       frequencyLabel: '自敲頻率',
       prayWords: '念誦詞',
       subautohit: {
@@ -456,7 +456,7 @@ export const translations = {
       resetButton: 'Tetapan Semula',
       countLabel: 'Kira:',
       totalLabel: 'Jumlah:',
-      autoHitToggle: 'Auto',
+      autoHitToggle: 'Kira Automatik',
       frequencyLabel: 'Frekuensi:',
     },
     statistics: {
