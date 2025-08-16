@@ -34,7 +34,13 @@ export const translations = {
       settings: 'Settings',
       notSet: 'Not set',
       permissionRequired: 'Permission required',
-      photoPermissionMessage:'Allow this app to access your photos to save images'
+      photoPermissionMessage: 'Allow this app to access your photos to save images'
+    },
+    "alert": {
+      "playbackErrorTitle": "Playback Error",
+      "playbackErrorMessage": "Unable to stream music. Please check your connection.",
+      "saveErrorTitle": "Error",
+      "saveErrorMessage": "Failed to save data.",
     },
     tabs: {
       recitation: 'Recitation',
@@ -142,7 +148,7 @@ export const translations = {
       confirm: '确认',
       cancel: '取消',
       warning: '警告',
-      back: '返回', 
+      back: '返回',
       set: '设置',
       year: '年',
       month: '月',
@@ -173,6 +179,12 @@ export const translations = {
       notSet: '未设置',
       permissionRequired: '需要权限',
       photoPermissionMessage: '允许此应用访问您的照片以保存图像'
+    },
+    "alert": {
+      "playbackErrorTitle": "播放错误",
+      "playbackErrorMessage": "无法播放音乐。请检查您的网络连接。",
+      "saveErrorTitle": "错误",
+      "saveErrorMessage": "保存数据失败。",
     },
     tabs: {
       recitation: '念诵',
@@ -286,7 +298,7 @@ export const translations = {
       hour: '小時',
       minute: '分鐘',
       minutes: '分鐘',
-      second: '秒', 
+      second: '秒',
       ok: '確定',
       reset: '重置',
       save: '保存',
@@ -309,6 +321,12 @@ export const translations = {
       notSet: '未設置',
       permissionRequired: '需要權限',
       photoPermissionMessage: '允許此應用訪問您的照片以保存圖像'
+    },
+    "alert": {
+      "playbackErrorTitle": "播放錯誤",
+      "playbackErrorMessage": "無法播放音樂。請檢查您的網絡連接。",
+      "saveErrorTitle": "錯誤",
+      "saveErrorMessage": "保存數據失敗。",
     },
     tabs: {
       recitation: '念誦',
@@ -445,6 +463,12 @@ export const translations = {
       notSet: 'Tidak ditetapkan',
       permissionRequired: 'Memerlukan kebenaran',
       photoPermissionMessage: 'Benarkan aplikasi ini mengakses foto anda untuk menyimpan imej'
+    },
+    "alert": {
+      "playbackErrorTitle": "Ralat Main Semula",
+      "playbackErrorMessage": "Tidak dapat memainkan muzik. Sila periksa sambungan anda.",
+      "saveErrorTitle": "Ralat",
+      "saveErrorMessage": "Gagal menyimpan data.",
     },
     tabs: {
       recitation: 'Zikir',

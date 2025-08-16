@@ -10,13 +10,14 @@ import {
     AppState,
     DeviceEventEmitter,
     Dimensions,
+    Easing,
     Modal,
     StyleSheet,
     Switch,
     Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    View,
+    View
 } from 'react-native';
 import { useLocalization } from '../useLocalization';
 
@@ -26,14 +27,14 @@ const UNSAVED_COUNT_STORAGE_KEY = 'unsaved_hit_data';
 
 // ✅ NEW: Map of music keys to their assets
 const musicMap = {
-    'dabeizhou.mp3': require('../../assets/music/dabeizhou.mp3'),
-    'guanshiyin.mp3': require('../../assets/music/guanshiyin.mp3'),
+    'dabeizhou.mp3': 'https://lnlsolutions.s3.ap-southeast-1.amazonaws.com/woodfish/dabeizhou.mp3',
+    'guanshiyin.mp3': 'https://lnlsolutions.s3.ap-southeast-1.amazonaws.com/woodfish/guanshiyin.mp3',
 };
 
 interface HitRecord {
-  timestamp: number;
-  count: number;
-  prayWords?: string; // ✅ Add this optional field
+    timestamp: number;
+    count: number;
+    prayWords?: string; // ✅ Add this optional field
 }
 
 
@@ -84,6 +85,8 @@ export default function Index() {
     const waveBars = Array.from({ length: NUM_BARS }, () => useRef(new Animated.Value(0)).current);
     const prayWordsAnim = useRef(new Animated.Value(0)).current;
     const [soundVolume, setSoundVolume] = useState(1);
+    const [isMusicLoading, setIsMusicLoading] = useState(false);
+    const rotateAnim = useRef(new Animated.Value(0)).current;
 
 
 
@@ -134,8 +137,8 @@ export default function Index() {
             if (data?.selectedMusic) setSelectedMusic(data.selectedMusic); // ✅ NEW
             if (typeof data?.prayWords === 'string') setPrayWords(data.prayWords);
             if (data.soundVolume !== undefined) {
-      setSoundVolume(data.soundVolume);
-    }
+                setSoundVolume(data.soundVolume);
+            }
 
         });
         return () => subscription.remove();
@@ -162,7 +165,7 @@ export default function Index() {
             loadSettings();
         }, [])
     );
-''
+    ''
     // Create an event listener for autohit settings changes
     useEffect(() => {
         const subscription = DeviceEventEmitter.addListener('autohitSettingsChanged', (data) => {
@@ -278,25 +281,25 @@ export default function Index() {
         }
     };
 
-const playSound = useCallback(async () => {
-  if (!soundEnabled) return;
-  try {
-    const { sound } = await Audio.Sound.createAsync(
-      require('../../assets/sound/muyu.mp3'),
-      { volume: soundVolume }
-    );
-    await sound.setVolumeAsync(soundVolume);
-    await sound.playAsync();
+    const playSound = useCallback(async () => {
+        if (!soundEnabled) return;
+        try {
+            const { sound } = await Audio.Sound.createAsync(
+                require('../../assets/sound/muyu.mp3'),
+                { volume: soundVolume }
+            );
+            await sound.setVolumeAsync(soundVolume);
+            await sound.playAsync();
 
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if (status.isLoaded && status.didJustFinish) {
-        sound.unloadAsync();
-      }
-    });
-  } catch (e) {
-    console.warn('Failed to play sound:', e);
-  }
-}, [soundEnabled, soundVolume]);
+            sound.setOnPlaybackStatusUpdate((status) => {
+                if (status.isLoaded && status.didJustFinish) {
+                    sound.unloadAsync();
+                }
+            });
+        } catch (e) {
+            console.warn('Failed to play sound:', e);
+        }
+    }, [soundEnabled, soundVolume]);
 
     const handleHit = useCallback(() => {
         Animated.sequence([
@@ -374,10 +377,10 @@ const playSound = useCallback(async () => {
 
             todayData.total += count;
             todayData.hits.push({
-  timestamp: Date.now(),
-  count: count,
-  prayWords: prayWords !== '' ? prayWords : undefined, // ✅ Save only if non-empty
-});
+                timestamp: Date.now(),
+                count: count,
+                prayWords: prayWords !== '' ? prayWords : undefined, // ✅ Save only if non-empty
+            });
 
 
             allData[today] = todayData;
@@ -392,7 +395,12 @@ const playSound = useCallback(async () => {
 
         } catch (e) {
             console.error('Failed to save hit count:', e);
-            Alert.alert('Error', 'Failed to save data.');
+            Alert.alert(
+                t('alert.saveErrorTitle'),           // localized title
+                t('alert.saveErrorMessage'),         // localized message
+                [{ text: t('common.ok'), onPress: () => { } }] // reuse localized OK button
+            );
+
         }
     };
 
@@ -475,22 +483,43 @@ const playSound = useCallback(async () => {
                 await musicRef.current?.pauseAsync();
                 setIsMusicPlaying(false);
             } else {
+                setIsMusicLoading(true); // 👈 Start loading
+                Animated.loop(
+                    Animated.timing(rotateAnim, {
+                        toValue: 1,
+                        duration: 1000,
+                        useNativeDriver: true,
+                        easing: Easing.linear,
+                    })
+                ).start();
+
                 if (musicRef.current) {
                     await musicRef.current.playAsync();
                 } else {
                     const { sound } = await Audio.Sound.createAsync(
-                        musicAsset,
+                        { uri: musicAsset },
                         { isLooping: true }
                     );
                     musicRef.current = sound;
                     await sound.playAsync();
                 }
+
                 setIsMusicPlaying(true);
             }
         } catch (e) {
             console.warn('Failed to toggle music:', e);
+            Alert.alert(
+                t('alert.playbackErrorTitle'),         // localized title
+                t('alert.playbackErrorMessage'),       // localized message
+                [{ text: t('common.ok'), onPress: () => { } }] // localized OK button
+            );
+        } finally {
+            setIsMusicLoading(false); // 👈 Stop loading
+            rotateAnim.setValue(0);
+
         }
     };
+
 
     useEffect(() => {
         // When music selection changes, stop and unload the current sound.
@@ -538,24 +567,50 @@ const playSound = useCallback(async () => {
         };
     }, [isMusicPlaying]);
 
-const triggerPrayWordsAnimation = () => {
-  prayWordsAnim.setValue(0);
-  Animated.sequence([
-    Animated.timing(prayWordsAnim, {
-      toValue: 1,
-      duration: 100,
-      useNativeDriver: true,
-    }),
-    Animated.delay(200),
-    Animated.timing(prayWordsAnim, {
-      toValue: 2,
-      duration: 100,
-      useNativeDriver: true,
-    }),
-  ]).start(() => {
-    prayWordsAnim.setValue(0); // reset after animation
-  });
-};
+
+    useEffect(() => {
+        const preloadMusic = async () => {
+            const musicAsset = musicMap[selectedMusic as keyof typeof musicMap];
+            if (!musicAsset) return;
+
+            try {
+                const { sound } = await Audio.Sound.createAsync(
+                    { uri: musicAsset },
+                    { shouldPlay: false, isLooping: true }
+                );
+                musicRef.current = sound;
+            } catch (e) {
+                console.warn('Failed to preload music:', e);
+            }
+        };
+
+        preloadMusic();
+
+        return () => {
+            musicRef.current?.unloadAsync();
+            musicRef.current = null;
+        };
+    }, [selectedMusic]);
+
+
+    const triggerPrayWordsAnimation = () => {
+        prayWordsAnim.setValue(0);
+        Animated.sequence([
+            Animated.timing(prayWordsAnim, {
+                toValue: 1,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+            Animated.delay(200),
+            Animated.timing(prayWordsAnim, {
+                toValue: 2,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+        ]).start(() => {
+            prayWordsAnim.setValue(0); // reset after animation
+        });
+    };
 
 
 
@@ -614,34 +669,34 @@ const triggerPrayWordsAnimation = () => {
                         {count}
                     </Text>}
                     {prayWords !== '' && (
-  <Animated.Text
-    style={[
-      styles.prayWordsText,
-      {
-        opacity: prayWordsAnim.interpolate({
-          inputRange: [0, 1, 2],
-          outputRange: [0, 1, 0],
-        }),
-        transform: [
-          {
-            scale: prayWordsAnim.interpolate({
-              inputRange: [0, 1, 2],
-              outputRange: [0.8, 1.2, 1.2],
-            }),
-          },
-          {
-            translateY: prayWordsAnim.interpolate({
-              inputRange: [0, 1, 2],
-              outputRange: [0, 0, -40], // float upward
-            }),
-          },
-        ],
-      },
-    ]}
-  >
-    {prayWords}
-  </Animated.Text>
-)}
+                        <Animated.Text
+                            style={[
+                                styles.prayWordsText,
+                                {
+                                    opacity: prayWordsAnim.interpolate({
+                                        inputRange: [0, 1, 2],
+                                        outputRange: [0, 1, 0],
+                                    }),
+                                    transform: [
+                                        {
+                                            scale: prayWordsAnim.interpolate({
+                                                inputRange: [0, 1, 2],
+                                                outputRange: [0.8, 1.2, 1.2],
+                                            }),
+                                        },
+                                        {
+                                            translateY: prayWordsAnim.interpolate({
+                                                inputRange: [0, 1, 2],
+                                                outputRange: [0, 0, -40], // float upward
+                                            }),
+                                        },
+                                    ],
+                                },
+                            ]}
+                        >
+                            {prayWords}
+                        </Animated.Text>
+                    )}
 
 
 
@@ -674,30 +729,47 @@ const triggerPrayWordsAnimation = () => {
                             />
                         </TouchableOpacity>
                     )}
+                    {isMusicLoading && (
+                        <Animated.View
+                            style={{
+                                position: 'absolute',
+                                bottom: 90,
+                                right: 20,
+                                transform: [{
+                                    rotate: rotateAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: ['0deg', '360deg'],
+                                    }),
+                                }],
+                            }}
+                        >
+                            <Feather name="loader" size={20} color="#8B4513" />
+                        </Animated.View>
+                    )}
 
                     {isMusicPlaying && (
-                        <View style={{ position: 'absolute', bottom: 90, right: 20, flexDirection: 'row', gap: 4 }}>
+                        <View style={styles.waveContainer}>
                             {waveBars.map((bar, index) => (
                                 <Animated.View
                                     key={index}
-                                    style={{
-                                        width: 2,
-                                        height: 20,
-                                        borderRadius: 2,
-                                        backgroundColor: '#4CAF50',
-                                        transform: [
-                                            {
-                                                scaleY: bar.interpolate({
-                                                    inputRange: [0, 1],
-                                                    outputRange: [0.5, 1.5],
-                                                }),
-                                            },
-                                        ],
-                                    }}
+                                    style={[
+                                        styles.waveBar,
+                                        {
+                                            transform: [
+                                                {
+                                                    scaleY: bar.interpolate({
+                                                        inputRange: [0, 1],
+                                                        outputRange: [0.5, 1.5],
+                                                    }),
+                                                },
+                                            ],
+                                        },
+                                    ]}
                                 />
                             ))}
                         </View>
                     )}
+
 
                 </View>
             </TouchableWithoutFeedback>
@@ -804,6 +876,19 @@ const styles = StyleSheet.create({
     musicIcon: {
         fontSize: 24,
         fontWeight: 'bold',
+    },
+    waveContainer: {
+        position: 'absolute',
+        bottom: 90,
+        right: 20,
+        flexDirection: 'row',
+        gap: 4,
+    },
+    waveBar: {
+        width: 2,
+        height: 20,
+        borderRadius: 2,
+        backgroundColor: '#4CAF50',
     },
     modalContainer: {
         flex: 1,

@@ -173,9 +173,10 @@ export default function SettingsScreen() {
   };
 
   const toggleSection = (setter: React.Dispatch<React.SetStateAction<boolean>>) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setter(prev => !prev);
-  };
+  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  setTimeout(() => setter(prev => !prev), 100); // 👈 small delay helps on iOS
+};
+
 
   const iconColor = "#4B3F38";
   const iconSize = width * 0.055;
@@ -190,16 +191,17 @@ export default function SettingsScreen() {
           </View>
 
           {/* Background Color Picker */}
-          <TouchableOpacity style={styles.sectionHeader} onPress={() => toggleSection(setShowColorPicker)}>
+          <Pressable style={styles.sectionHeader} onPress={() => toggleSection(setShowColorPicker)}>
             <Feather name="droplet" size={iconSize} color={iconColor} />
             <Text style={styles.label}>{t('settings.bgColorLabel')}</Text>
-          </TouchableOpacity>
+          </Pressable>
           {showColorPicker && (
-            <View style={styles.pickerWrapper}>
+            <View style={styles.pickerWrapper} pointerEvents="box-none">
               <RNPickerSelect
                 value={bgColor}
                 onValueChange={setBgColor}
                 items={bgColors}
+                mode="modal"
                 useNativeAndroidPickerStyle={false}
                 placeholder={{}} // 👈 disables the default "Select an item..."
                 style={{
@@ -208,25 +210,27 @@ export default function SettingsScreen() {
                   iconContainer: {
                     top: 12,
                     right: 12,
+                    padding: 10, // 👈 increases touchable area
                   },
                 }}
-                Icon={() => <Feather name="chevron-down" size={iconSize * 0.8} color="#F5F5DC" />}
+                Icon={() => <Feather name="chevron-down" size={iconSize * 1.2} color="#F5F5DC" />}
 
               />
             </View>
           )}
 
           {/* Language Picker */}
-          <TouchableOpacity style={styles.sectionHeader} onPress={() => toggleSection(setShowLanguagePicker)}>
+          <Pressable style={styles.sectionHeader} onPress={() => toggleSection(setShowLanguagePicker)}>
             <Feather name="globe" size={iconSize} color={iconColor} />
             <Text style={styles.label}>{t('settings.languageLabel')}</Text>
-          </TouchableOpacity>
+          </Pressable>
           {showLanguagePicker && (
-            <View style={styles.pickerWrapper}>
+            <View style={styles.pickerWrapper} pointerEvents="box-none">
               <RNPickerSelect
                 value={language}
                 onValueChange={setLanguage}
                 items={languages}
+                mode="modal"
                 useNativeAndroidPickerStyle={false}
                 placeholder={{}} // 👈 disables default "Select an item..."
                 style={{
@@ -235,25 +239,27 @@ export default function SettingsScreen() {
                   iconContainer: {
                     top: 12,
                     right: 12,
+                    padding: 10, // 👈 increases touchable area
                   },
                 }}
-                Icon={() => <Feather name="chevron-down" size={iconSize * 0.8} color="#F5F5DC" />}
+                Icon={() => <Feather name="chevron-down" size={iconSize * 1.2} color="#F5F5DC" />}
               />
             </View>
           )}
 
 
           {/* Music Picker */}
-          <TouchableOpacity style={styles.sectionHeader} onPress={() => toggleSection(setShowMusicPicker)}>
+          <Pressable style={styles.sectionHeader} onPress={() => toggleSection(setShowMusicPicker)}>
             <Feather name="music" size={iconSize} color={iconColor} />
             <Text style={styles.label}>{t('settings.musicLabel') || 'Background Music'}</Text>
-          </TouchableOpacity>
+          </Pressable>
           {showMusicPicker && (
-            <View style={styles.pickerWrapper}>
+            <View style={styles.pickerWrapper} pointerEvents="box-none">
               <RNPickerSelect
                 value={selectedMusic}
                 onValueChange={setSelectedMusic}
                 items={musicOptions}
+                mode="modal"
                 useNativeAndroidPickerStyle={false}
                 placeholder={{}} // 👈 removes default "Select an item..."
                 style={{
@@ -262,9 +268,10 @@ export default function SettingsScreen() {
                   iconContainer: {
                     top: 12,
                     right: 12,
+                    padding: 10, // 👈 increases touchable area
                   },
                 }}
-                Icon={() => <Feather name="chevron-down" size={iconSize * 0.8} color="#F5F5DC" />}
+                Icon={() => <Feather name="chevron-down" size={iconSize * 1.2} color="#F5F5DC" />}
               />
             </View>
           )}
