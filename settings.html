@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    body{margin:0;font-family:sans-serif;background:#111;color:#fff;padding:20px}
+    .card{background:#222;padding:15px;margin:10px 0;border-radius:8px}
+    .label{margin-bottom:5px;display:block}
+    input,select{padding:6px;border-radius:5px;border:none;width:100%;margin-bottom:10px}
+    .switch{transform:scale(1.2)}
+    .btn{padding:10px 16px;margin:5px;border:none;border-radius:8px;cursor:pointer}
+    .btn-danger{background:#8B0000;color:#fff}
+    a{color:#ccc;text-decoration:none;display:block;margin-top:20px}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    const {useState,useEffect} = React;
+    const STORAGE_KEY='@user_settings';
+    const defaultSettings={bgColor:'#000',language:'en',soundEnabled:true,hapticsEnabled:true,frequency:1,disarrayEnabled:false,showCounter:true,selectedMusic:'dabeizhou.mp3',prayWords:'',soundVolume:1,stopDuration:0,stopTimestamp:null};
+    function loadSettings(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?{...defaultSettings,...JSON.parse(raw)}:defaultSettings}catch(e){return defaultSettings}}
+    function saveSettings(p){localStorage.setItem(STORAGE_KEY,JSON.stringify(p))}
+    const MUSIC_TRACKS={'dabeizhou.mp3':"Da Bei Zhou",'guanshiyin.mp3':"Guan Shi Yin"};
+    function App(){const [settings,setSettings]=useState(loadSettings());
+      function set(patch){const merged={...settings,...patch};setSettings(merged);saveSettings(merged)}
+      return React.createElement('div',null,
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Background Color'),
+          React.createElement('input',{type:'color',value:settings.bgColor,onChange:e=>set({bgColor:e.target.value})})
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Language'),
+          React.createElement('select',{value:settings.language,onChange:e=>set({language:e.target.value})},
+            React.createElement('option',{value:'en'},'English'),
+            React.createElement('option',{value:'zh-CN'},'简体中文'),
+            React.createElement('option',{value:'zh-HK'},'繁體中文'),
+            React.createElement('option',{value:'ms'},'Bahasa Melayu')
+          )
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Sound Enabled'),
+          React.createElement('input',{type:'checkbox',className:'switch',checked:settings.soundEnabled,onChange:e=>set({soundEnabled:e.target.checked})}),
+          settings.soundEnabled&&React.createElement('div',null,
+            React.createElement('label',{className:'label'},'Volume'),
+            React.createElement('input',{type:'range',min:0,max:1,step:0.05,value:settings.soundVolume,onChange:e=>set({soundVolume:Number(e.target.value)})})
+          )
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Background Music'),
+          React.createElement('select',{value:settings.selectedMusic,onChange:e=>set({selectedMusic:e.target.value})},
+            Object.keys(MUSIC_TRACKS).map(k=>React.createElement('option',{key:k,value:k},MUSIC_TRACKS[k]))
+          )
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Haptics'),
+          React.createElement('input',{type:'checkbox',className:'switch',checked:settings.hapticsEnabled,onChange:e=>set({hapticsEnabled:e.target.checked})})
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Disarray Counter'),
+          React.createElement('input',{type:'checkbox',className:'switch',checked:settings.disarrayEnabled,onChange:e=>set({disarrayEnabled:e.target.checked})})
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Show Counter'),
+          React.createElement('input',{type:'checkbox',className:'switch',checked:settings.showCounter,onChange:e=>set({showCounter:e.target.checked})})
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Pray Words'),
+          React.createElement('input',{type:'text',value:settings.prayWords,onChange:e=>set({prayWords:e.target.value})})
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('label',{className:'label'},'Auto-hit Frequency (s)'),
+          React.createElement('input',{type:'range',min:1,max:5,step:1,value:settings.frequency,onChange:e=>set({frequency:Number(e.target.value)})})
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('button',{className:'btn btn-danger',onClick:()=>{localStorage.removeItem(STORAGE_KEY);setSettings(defaultSettings)}},'Reset Settings')
+        ),
+        React.createElement('a',{href:'index.html'},'⬅️ Back to Counter')
+      )}
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>
