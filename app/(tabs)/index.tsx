@@ -678,7 +678,7 @@ export default function Index() {
                                         width: width * 0.2,
                                         height: width * 0.2,
                                         objectFit: 'contain',
-                                        transform: `scale(${scaleAnim.__getValue?.() || 1})`,
+                                        transform: `scale(${scaleAnim['_value'] || 1})`,
                                         transition: 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)',
                                     }}
                                     alt="muyu"
