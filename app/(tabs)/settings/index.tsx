@@ -43,7 +43,7 @@ export default function SettingsScreen() {
   const [hapticsEnabled, setHapticsEnabled] = useState(false);
   // Frequency state is no longer needed here
   const [disarrayEnabled, setDisarrayEnabled] = useState(false);
-  const [showCounter, setshowCounter] = useState(true);
+  const [showCounter, setshowCounter] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState('dabeizhou.mp3');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
@@ -199,13 +199,13 @@ export default function SettingsScreen() {
         <View style={styles.content}>
           <View style={styles.titleContainer}>
             <Feather name="settings" size={width * 0.08} color={iconColor} />
-            <Text style={styles.title}>{t('settings.title')}</Text>
+            <Text style={styles.title}>{t('settings.title') || 'Settings'}</Text>
           </View>
 
           {/* Background Color Picker */}
           <Pressable style={styles.sectionHeader} onPress={() => toggleSection(setShowColorPicker)}>
             <Feather name="droplet" size={iconSize} color={iconColor} />
-            <Text style={styles.label}>{t('settings.bgColorLabel')}</Text>
+            <Text style={styles.label}>{t('settings.bgColorLabel') || 'Background Color'}</Text>
           </Pressable>
           {showColorPicker && (
             <View style={styles.pickerWrapper} pointerEvents="box-none">
@@ -234,7 +234,7 @@ export default function SettingsScreen() {
           {/* Language Picker */}
           <Pressable style={styles.sectionHeader} onPress={() => toggleSection(setShowLanguagePicker)}>
             <Feather name="globe" size={iconSize} color={iconColor} />
-            <Text style={styles.label}>{t('settings.languageLabel')}</Text>
+            <Text style={styles.label}>{t('settings.languageLabel') || 'Language'}</Text>
           </Pressable>
           {showLanguagePicker && (
             <View style={styles.pickerWrapper} pointerEvents="box-none">
@@ -309,7 +309,7 @@ export default function SettingsScreen() {
           <TouchableOpacity style={styles.toggleRow} onPress={() => router.push('settings/autohit-settings')}>
             <View style={styles.labelContainer}>
               <Feather name="fast-forward" size={iconSize} color={iconColor} />
-              <Text style={styles.label}>{t('settings.autohit')}</Text>
+              <Text style={styles.label}>{t('settings.autohit') || 'Auto Hit'}</Text>
             </View>
             <Feather name="chevron-right" size={iconSize} color={iconColor} />
           </TouchableOpacity>
@@ -387,7 +387,7 @@ export default function SettingsScreen() {
           <View style={styles.toggleRow}>
             <View style={styles.labelContainer}>
               <Feather name="activity" size={iconSize} color={iconColor} />
-              <Text style={styles.label}>{t('settings.hapticsLabel')}</Text>
+              <Text style={styles.label}>{t('settings.hapticsLabel') || 'Haptics Feedback'}</Text>
             </View>
             <Switch value={hapticsEnabled} onValueChange={setHapticsEnabled} trackColor={{ false: '#ccc', true: '#8B4513' }} thumbColor={hapticsEnabled ? '#fff' : '#888'} />
           </View>
@@ -413,7 +413,7 @@ export default function SettingsScreen() {
           {/* Reset Button */}
           <Pressable style={styles.resetButton} onPress={confirmReset}>
             <Feather name="trash-2" size={width * 0.045} color="#fff" />
-            <Text style={styles.resetButtonText}>{t('settings.resetButton')}</Text>
+            <Text style={styles.resetButtonText}>{t('settings.resetButton') || 'Reset Settings'}</Text>
           </Pressable>
         </View>
       </ScrollView>
