@@ -12,6 +12,7 @@ import {
     Dimensions,
     Easing,
     Modal,
+    Platform,
     StyleSheet,
     Switch,
     Text,
@@ -87,8 +88,6 @@ export default function Index() {
     const [soundVolume, setSoundVolume] = useState(1);
     const [isMusicLoading, setIsMusicLoading] = useState(false);
     const rotateAnim = useRef(new Animated.Value(0)).current;
-
-
 
 
     useFocusEffect(
@@ -305,13 +304,13 @@ export default function Index() {
         Animated.sequence([
             Animated.spring(scaleAnim, {
                 toValue: 0.85,
-                useNativeDriver: true,
+                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
                 speed: 20,
                 bounciness: 10,
             }),
             Animated.spring(scaleAnim, {
                 toValue: 1,
-                useNativeDriver: true,
+                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
                 speed: 20,
                 bounciness: 10,
             }),
@@ -344,19 +343,19 @@ export default function Index() {
                 Animated.timing(fadeAnim, {
                     toValue: 1,
                     duration: 300,
-                    useNativeDriver: true,
+                    useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
                 }),
                 Animated.spring(modalScaleAnim, {
                     toValue: 1,
                     friction: 4,
-                    useNativeDriver: true,
+                    useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
                 }),
             ]),
             Animated.delay(200),
             Animated.timing(fadeAnim, {
                 toValue: 0,
                 duration: 500,
-                useNativeDriver: true,
+                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
             }),
         ]).start(() => {
             setShowSuccessModal(false);
@@ -414,7 +413,7 @@ export default function Index() {
             Animated.timing(slideAnim, {
                 toValue: 150,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
             }).start();
             return;
         }
@@ -430,7 +429,7 @@ export default function Index() {
         Animated.timing(slideAnim, {
             toValue: 0,
             duration: 300,
-            useNativeDriver: true,
+            useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
         }).start();
 
         const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -465,7 +464,7 @@ export default function Index() {
     const handlePressOut = () => {
         Animated.spring(scaleAnim, {
             toValue: 1,
-            useNativeDriver: true,
+            useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
             speed: 20,
             bounciness: 10,
         }).start();
@@ -488,7 +487,7 @@ export default function Index() {
                     Animated.timing(rotateAnim, {
                         toValue: 1,
                         duration: 1000,
-                        useNativeDriver: true,
+                        useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
                         easing: Easing.linear,
                     })
                 ).start();
@@ -545,12 +544,12 @@ export default function Index() {
                     Animated.timing(bar, {
                         toValue: 1,
                         duration: 300 + i * 100,
-                        useNativeDriver: true,
+                        useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
                     }),
                     Animated.timing(bar, {
                         toValue: 0,
                         duration: 300 + i * 100,
-                        useNativeDriver: true,
+                        useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
                     }),
                 ])
             )
@@ -599,13 +598,13 @@ export default function Index() {
             Animated.timing(prayWordsAnim, {
                 toValue: 1,
                 duration: 100,
-                useNativeDriver: true,
+                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
             }),
             Animated.delay(200),
             Animated.timing(prayWordsAnim, {
                 toValue: 2,
                 duration: 100,
-                useNativeDriver: true,
+                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
             }),
         ]).start(() => {
             prayWordsAnim.setValue(0); // reset after animation
@@ -845,7 +844,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     counterText: {
-        fontSize: width * 0.15,
+        fontSize: width * 0.08,
         fontWeight: 'bold',
         color: '#F5F5DC', // ✅ Matches switchLabel
     },
@@ -853,8 +852,8 @@ const styles = StyleSheet.create({
         transform: [{ scale: 0.6 }],
     },
     woodfishImage: {
-        width: width * 0.7,
-        height: width * 0.7,
+        width: width * 0.2,
+        height: width * 0.2,
         marginTop: 20,
     },
 

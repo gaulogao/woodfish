@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   halfScreenModal: {
-    width: '100%',
+    width: '30%',
     height: '80%',
     borderRadius: 20,
     overflow: 'hidden',

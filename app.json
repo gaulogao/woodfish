@@ -8,6 +8,9 @@
     "scheme": "woodfish",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
@@ -21,7 +24,6 @@
       }
     },
     "android": {
-
       "splash": {
         "image": "./assets/images/splash-android.png",
         "resizeMode": "cover",
@@ -37,7 +39,8 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "publicPath": "./"
     },
     "plugins": [
       "expo-router",
