@@ -25,7 +25,10 @@ import { useLocalization } from '../useLocalization';
 const { width } = Dimensions.get('window');
 const STORAGE_KEY = 'daily_hits';
 const UNSAVED_COUNT_STORAGE_KEY = 'unsaved_hit_data';
-
+const imageSource =
+  Platform.OS === 'web'
+    ? { uri: '/images/woodfish/muyu-white.png' }
+    : require('../../assets/images/woodfish/muyu-white.png');
 // ✅ NEW: Map of music keys to their assets
 const musicMap = {
     'dabeizhou.mp3': 'https://lnlsolutions.s3.ap-southeast-1.amazonaws.com/woodfish/dabeizhou.mp3',
@@ -701,7 +704,7 @@ export default function Index() {
 
                     <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
                         <Animated.Image
-                            source={require('../../assets/images/woodfish/muyu-white.png')}
+                            source={imageSource}
                             style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
                             resizeMode="contain"
                         />
