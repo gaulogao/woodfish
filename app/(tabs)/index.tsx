@@ -702,8 +702,7 @@ export default function Index() {
 
 
 
-                    <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
-                        {Platform.OS === 'web' ? (
+{Platform.OS === 'web' ? (
   <img
     src="/images/woodfish/muyu.png"
     style={{
@@ -711,7 +710,7 @@ export default function Index() {
       height: width * 0.2,
       marginTop: 20,
       objectFit: 'contain',
-      transform: `scale(${scaleAnim.__getValue?.() || 1})`,
+      transform: 'scale(1)',
     }}
     alt="muyu"
   />
@@ -722,7 +721,6 @@ export default function Index() {
     resizeMode="contain"
   />
 )}
-                    </TouchableWithoutFeedback>
 
                     {/*{(isMusicPlaying || showMusicButton) && (*/}
                     {true && (
