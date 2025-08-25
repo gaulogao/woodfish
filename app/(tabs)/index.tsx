@@ -11,6 +11,7 @@ import {
     DeviceEventEmitter,
     Dimensions,
     Easing,
+    Image,
     Modal,
     Platform,
     StyleSheet,
@@ -703,7 +704,7 @@ export default function Index() {
 
 
                     <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
-                        <Animated.Image
+                        <Image
                             source={imageSource}
                             style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
                             resizeMode="contain"
