@@ -50,25 +50,42 @@ export default function SettingsScreen() {
   const [showMusicPicker, setShowMusicPicker] = useState(false);
   const [prayWords, setprayWords] = useState('');
   const [soundVolume, setSoundVolume] = useState(1); // default full volume
+  const [showAdModal, setShowAdModal] = useState(true);
+  const bgColors = [
+    { label: t('settings.colors.beige') || 'Beige', value: '#eab676' },
+    { label: t('settings.colors.black') || 'Black', value: '#000000' },
+    { label: t('settings.colors.red') || 'Red', value: '#640303ff' },
+  ];
 
-const bgColors = [
-  { label: t('settings.colors.beige') || 'Beige', value: '#eab676' },
-  { label: t('settings.colors.black') || 'Black', value: '#000000' },
-  { label: t('settings.colors.red') || 'Red', value: '#640303ff' },
-];
+  const languages = [
+    { label: t('settings.languages.en') || 'English', value: 'en' },
+    { label: t('settings.languages.zhCN') || '简体中文', value: 'zh-CN' },
+    { label: t('settings.languages.zhHK') || '繁體中文', value: 'zh-HK' },
+    { label: t('settings.languages.ms') || 'Malay', value: 'ms' },
+  ];
 
-const languages = [
-  { label: t('settings.languages.en') || 'English', value: 'en' },
-  { label: t('settings.languages.zhCN') || '简体中文', value: 'zh-CN' },
-  { label: t('settings.languages.zhHK') || '繁體中文', value: 'zh-HK' },
-  { label: t('settings.languages.ms') || 'Malay', value: 'ms' },
-];
+  const musicOptions = [
+    { label: t('settings.music.dabeizhou') || 'Da Bei Zhou', value: 'dabeizhou.mp3' },
+    { label: t('settings.music.guanshiyin') || 'Guan Shi Yin', value: 'guanshiyin.mp3' },
+  ];
 
-const musicOptions = [
-  { label: t('settings.music.dabeizhou') || 'Da Bei Zhou', value: 'dabeizhou.mp3' },
-  { label: t('settings.music.guanshiyin') || 'Guan Shi Yin', value: 'guanshiyin.mp3' },
-];
-
+  useEffect(() => {
+    // Load AdSense script when modal is shown
+    if (showAdModal && typeof window !== 'undefined') {
+      if (!document.getElementById('adsbygoogle-js')) {
+        const script = document.createElement('script');
+        script.id = 'adsbygoogle-js';
+        script.async = true;
+        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+        document.body.appendChild(script);
+      }
+      // (Re)initialize ads
+      setTimeout(() => {
+        // @ts-ignore
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }, 500);
+    }
+  }, [showAdModal]);
   // This effect loads all settings except frequency
   useEffect(() => {
     (async () => {
@@ -194,6 +211,50 @@ const musicOptions = [
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
+     // In your return JSX, add this at the top:
+      {Platform.OS === 'web' && showAdModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.7)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: 12,
+            padding: 20,
+            maxWidth: 350,
+            width: '90%',
+            boxShadow: '0 2px 16px rgba(0,0,0,0.2)',
+            textAlign: 'center',
+            position: 'relative'
+          }}>
+            <button
+              onClick={() => setShowAdModal(false)}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: 'transparent',
+                border: 'none',
+                fontSize: 24,
+                cursor: 'pointer'
+              }}
+              aria-label="Close"
+            >×</button>
+            {/* Replace the data-ad-slot with your AdSense slot ID */}
+            <ins className="adsbygoogle"
+              style={{ display: 'block', width: '100%', height: 250 }}
+              data-ad-client="ca-pub-3940256099942544"
+              data-ad-slot="1234567890"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+          </div>
+        </div>
+      )}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <View style={styles.titleContainer}>
