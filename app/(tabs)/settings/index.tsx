@@ -139,10 +139,10 @@ export default function SettingsScreen() {
                 bgColor: '#000000',
                 language: 'en',
                 soundEnabled: true, // Reset soundEnabled to true
-                hapticsEnabled: true, // Reset haptics to true
+                hapticsEnabled: false, // Reset haptics to true
                 frequency: 1, // Reset frequency to its default
                 disarrayEnabled: false, // Reset disarray to false
-                showCounter: true, // Reset showCounter to true
+                showCounter: false, // Reset showCounter to true
                 selectedMusic: 'dabeizhou.mp3',
                 prayWords: '', // Reset prayWords
                 soundVolume: 1, // Reset sound volume to full

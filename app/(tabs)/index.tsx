@@ -60,11 +60,11 @@ export default function Index() {
     const [autoHitEnabled, setAutoHitEnabled] = useState(false);
     const [frequency, setFrequency] = useState(1);
     const [soundEnabled, setSoundEnabled] = useState(true);
-    const [hapticsEnabled, setHapticsEnabled] = useState(true);
+    const [hapticsEnabled, setHapticsEnabled] = useState(false);
     const [bgColor, setBgColor] = useState('#000000');
     const [isMusicPlaying, setIsMusicPlaying] = useState(false);
     const [showMusicButton, setShowMusicButton] = useState(false);
-    const [showCounter, setShowCounter] = useState(true);
+    const [showCounter, setShowCounter] = useState(false);
     const [disarrayEnabled, setDisarrayEnabled] = useState(false);
     const [selectedMusic, setSelectedMusic] = useState('dabeizhou.mp3');
     const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -86,7 +86,18 @@ export default function Index() {
     const [soundVolume, setSoundVolume] = useState(1);
     const [isMusicLoading, setIsMusicLoading] = useState(false);
     const rotateAnim = useRef(new Animated.Value(0)).current;
+    // --- Add this state for web scale ---
+    const [webScale, setWebScale] = useState(1);
 
+    useEffect(() => {
+        if (Platform.OS === 'web') {
+            const id = scaleAnim.addListener(({ value }) => {
+                setWebScale(value);
+            });
+            return () => scaleAnim.removeListener(id);
+        }
+    }, [scaleAnim]);
+    // -------------------------------------
     // --- Hydration fix for web image ---
     const [mounted, setMounted] = useState(Platform.OS !== 'web');
     useEffect(() => {
@@ -678,7 +689,7 @@ export default function Index() {
                                         width: width * 0.2,
                                         height: width * 0.2,
                                         objectFit: 'contain',
-                                        transform: `scale(${scaleAnim['_value'] || 1})`,
+                                        transform: `scale(${webScale})`,
                                         transition: 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)',
                                     }}
                                     alt="muyu"
