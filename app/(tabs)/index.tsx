@@ -692,37 +692,40 @@ export default function Index() {
                             {prayWords}
                         </Animated.Text>
                     )}
-                    {Platform.OS === 'web' ? (
-                        mounted && (
-                            <div
-                                style={{
-                                    display: 'inline-block',
-                                    cursor: 'pointer',
-                                    marginTop: 20,
-                                }}
-                                onClick={handleHit}
-                            >
-                                <img
-                                    src="/images/woodfish/muyu.png"
-                                    style={{
-                                        width: width * 0.2,
-                                        height: width * 0.2,
-                                        objectFit: 'contain',
-                                        transform: `scale(${webScale})`,
-                                        transition: 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                                    }}
-                                    alt="muyu"
-                                    draggable={false}
-                                />
-                            </div>
-                        )
-                    ) : (
-                        <Animated.Image
-                            source={require('../../assets/images/woodfish/muyu-white.png')}
-                            style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
-                            resizeMode="contain"
-                        />
-                    )}
+{Platform.OS === 'web' ? (
+    mounted && (
+        <div
+            style={{
+                display: 'inline-block',
+                cursor: autoHitEnabled ? 'not-allowed' : 'pointer',
+                marginTop: 20,
+                opacity: autoHitEnabled ? 0.5 : 1,
+            }}
+            onClick={() => {
+                if (!autoHitEnabled) handleHit();
+            }}
+        >
+            <img
+                src="/images/woodfish/muyu.png"
+                style={{
+                    width: width * 0.2,
+                    height: width * 0.2,
+                    objectFit: 'contain',
+                    transform: `scale(${webScale})`,
+                    transition: 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                }}
+                alt="muyu"
+                draggable={false}
+            />
+        </div>
+    )
+) : (
+    <Animated.Image
+        source={require('../../assets/images/woodfish/muyu-white.png')}
+        style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
+        resizeMode="contain"
+    />
+)}
 
                     {true && (
                         <TouchableOpacity
