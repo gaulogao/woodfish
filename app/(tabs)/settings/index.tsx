@@ -51,24 +51,23 @@ export default function SettingsScreen() {
   const [prayWords, setprayWords] = useState('');
   const [soundVolume, setSoundVolume] = useState(1); // default full volume
 
+const bgColors = [
+  { label: t('settings.colors.beige') || 'Beige', value: '#eab676' },
+  { label: t('settings.colors.black') || 'Black', value: '#000000' },
+  { label: t('settings.colors.red') || 'Red', value: '#640303ff' },
+];
 
-  const bgColors = [
-    { label: t('settings.colors.beige'), value: '#eab676' },
-    { label: t('settings.colors.black'), value: '#000000' },
-    { label: t('settings.colors.red'), value: '#640303ff' },
-  ];
+const languages = [
+  { label: t('settings.languages.en') || 'English', value: 'en' },
+  { label: t('settings.languages.zhCN') || '简体中文', value: 'zh-CN' },
+  { label: t('settings.languages.zhHK') || '繁體中文', value: 'zh-HK' },
+  { label: t('settings.languages.ms') || 'Malay', value: 'ms' },
+];
 
-  const languages = [
-    { label: t('settings.languages.en'), value: 'en' },
-    { label: t('settings.languages.zhCN'), value: 'zh-CN' },
-    { label: t('settings.languages.zhHK'), value: 'zh-HK' },
-    { label: t('settings.languages.ms'), value: 'ms' },
-  ];
-
-  const musicOptions = [
-    { label: t('settings.music.dabeizhou') || 'Da Bei Zhou', value: 'dabeizhou.mp3' },
-    { label: t('settings.music.guanshiyin') || 'Guan Shi Yin', value: 'guanshiyin.mp3' },
-  ];
+const musicOptions = [
+  { label: t('settings.music.dabeizhou') || 'Da Bei Zhou', value: 'dabeizhou.mp3' },
+  { label: t('settings.music.guanshiyin') || 'Guan Shi Yin', value: 'guanshiyin.mp3' },
+];
 
   // This effect loads all settings except frequency
   useEffect(() => {
