@@ -702,13 +702,13 @@ export default function Index() {
 
 
 
-                    
+                    <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
                         <Animated.Image
                             source={imageSource}
                             style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
                             resizeMode="contain"
                         />
-          
+                    </TouchableWithoutFeedback>
 
                     {/*{(isMusicPlaying || showMusicButton) && (*/}
                     {true && (
