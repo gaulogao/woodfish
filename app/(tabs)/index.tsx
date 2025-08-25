@@ -29,7 +29,6 @@ const imageSource =
   Platform.OS === 'web'
     ? { uri: '/images/woodfish/muyu.png' }
     : require('../../assets/images/woodfish/muyu-white.png');
-// ✅ NEW: Map of music keys to their assets
 const musicMap = {
     'dabeizhou.mp3': 'https://lnlsolutions.s3.ap-southeast-1.amazonaws.com/woodfish/dabeizhou.mp3',
     'guanshiyin.mp3': 'https://lnlsolutions.s3.ap-southeast-1.amazonaws.com/woodfish/guanshiyin.mp3',
@@ -38,9 +37,8 @@ const musicMap = {
 interface HitRecord {
     timestamp: number;
     count: number;
-    prayWords?: string; // ✅ Add this optional field
+    prayWords?: string;
 }
-
 
 interface DailyHits {
     total: number;
@@ -56,7 +54,6 @@ interface UnsavedHitData {
     date: string;
 }
 
-
 export default function Index() {
     const { t } = useLocalization();
     const [count, setCount] = useState(0);
@@ -69,29 +66,33 @@ export default function Index() {
     const [showMusicButton, setShowMusicButton] = useState(false);
     const [showCounter, setShowCounter] = useState(true);
     const [disarrayEnabled, setDisarrayEnabled] = useState(false);
-    const [selectedMusic, setSelectedMusic] = useState('dabeizhou.mp3'); // ✅ NEW
+    const [selectedMusic, setSelectedMusic] = useState('dabeizhou.mp3');
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const slideAnim = useRef(new Animated.Value(150)).current;
     const musicRef = useRef<Audio.Sound | null>(null);
-    // ✅ NEW: State for autohit settings
     const [neverStopEnabled, setNeverStopEnabled] = useState(true);
     const [stopDuration, setStopDuration] = useState(0);
     const [stopTimestamp, setStopTimestamp] = useState<number | null>(null);
     const [countdownText, setCountdownText] = useState<string | null>(null);
     const [prayWords, setPrayWords] = useState('');
-
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [savedCount, setSavedCount] = useState(0);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const modalScaleAnim = useRef(new Animated.Value(0.5)).current;
-    const NUM_BARS = 12; // or any number you like
+    const NUM_BARS = 12;
     const waveBars = Array.from({ length: NUM_BARS }, () => useRef(new Animated.Value(0)).current);
     const prayWordsAnim = useRef(new Animated.Value(0)).current;
     const [soundVolume, setSoundVolume] = useState(1);
     const [isMusicLoading, setIsMusicLoading] = useState(false);
     const rotateAnim = useRef(new Animated.Value(0)).current;
 
+    // --- Hydration fix for web image ---
+    const [mounted, setMounted] = useState(Platform.OS !== 'web');
+    useEffect(() => {
+        if (Platform.OS === 'web') setMounted(true);
+    }, []);
+    // -----------------------------------
 
     useFocusEffect(
         useCallback(() => {
@@ -104,8 +105,6 @@ export default function Index() {
                     if (unsavedData.date === today) {
                         setCount(unsavedData.count);
                     } else {
-                        console.log(`Auto-saving ${unsavedData.count} for date ${unsavedData.date}`);
-
                         const stored = await AsyncStorage.getItem(STORAGE_KEY);
                         const allData: AllHitsData = stored ? JSON.parse(stored) : {};
                         const previousDayData: DailyHits = allData[unsavedData.date] || { total: 0, hits: [] };
@@ -136,12 +135,11 @@ export default function Index() {
             if (typeof data?.frequency === 'number') setFrequency(data.frequency);
             if (typeof data?.showCounter === 'boolean') setShowCounter(data.showCounter);
             if (typeof data?.disarrayEnabled === 'boolean') setDisarrayEnabled(data.disarrayEnabled);
-            if (data?.selectedMusic) setSelectedMusic(data.selectedMusic); // ✅ NEW
+            if (data?.selectedMusic) setSelectedMusic(data.selectedMusic);
             if (typeof data?.prayWords === 'string') setPrayWords(data.prayWords);
             if (data.soundVolume !== undefined) {
                 setSoundVolume(data.soundVolume);
             }
-
         });
         return () => subscription.remove();
     }, []);
@@ -158,17 +156,15 @@ export default function Index() {
                     if (typeof settings.disarrayEnabled === 'boolean') setDisarrayEnabled(settings.disarrayEnabled);
                     if (settings.bgColor) { setBgColor(settings.bgColor); }
                     if (typeof settings.frequency === 'number') { setFrequency(settings.frequency); }
-                    if (settings.selectedMusic) setSelectedMusic(settings.selectedMusic); // ✅ NEW
+                    if (settings.selectedMusic) setSelectedMusic(settings.selectedMusic);
                     if (settings.prayWords) setPrayWords(settings.prayWords);
                     if (typeof settings.soundVolume === 'number') setSoundVolume(settings.soundVolume);
-
                 }
             };
             loadSettings();
         }, [])
     );
-    ''
-    // Create an event listener for autohit settings changes
+
     useEffect(() => {
         const subscription = DeviceEventEmitter.addListener('autohitSettingsChanged', (data) => {
             setNeverStopEnabled(data.neverStopEnabled);
@@ -176,21 +172,12 @@ export default function Index() {
             setStopTimestamp(data.stopTimestamp);
         });
 
-        return () => subscription.remove(); // Clean up
+        return () => subscription.remove();
     }, []);
 
-    // Effect to handle auto-stop logic based on autohit settings
     useEffect(() => {
-        if (!autoHitEnabled) {
-            // Autohit is off — ignore all autohit settings
-            return;
-        }
-
-        // Autohit is on
-        if (neverStopEnabled) {
-            // Never stop — do nothing, autohit and music continue indefinitely
-            return;
-        }
+        if (!autoHitEnabled) return;
+        if (neverStopEnabled) return;
 
         if (!neverStopEnabled && stopDuration > 0 && stopTimestamp === null) {
             const timeout = setTimeout(() => {
@@ -198,7 +185,7 @@ export default function Index() {
                 setStopDuration(0);
                 setStopTimestamp(null);
                 if (isMusicPlaying) {
-                    toggleMusic(); // This pauses music
+                    toggleMusic();
                 }
             }, stopDuration * 60 * 1000);
 
@@ -215,13 +202,12 @@ export default function Index() {
                     setStopDuration(0);
                     setStopTimestamp(null);
                     if (isMusicPlaying) {
-                        toggleMusic(); // This pauses music
+                        toggleMusic();
                     }
                 }, delay);
 
                 return () => clearTimeout(timeout);
             } else {
-                // Timestamp is in the past — stop immediately
                 setAutoHitEnabled(false);
                 setStopDuration(0);
                 setStopTimestamp(null);
@@ -230,7 +216,6 @@ export default function Index() {
                 }
             }
         }
-
     }, [autoHitEnabled, neverStopEnabled, stopDuration, stopTimestamp, isMusicPlaying]);
 
     useEffect(() => {
@@ -266,12 +251,11 @@ export default function Index() {
             setCountdownText(`${minutes}:${seconds.toString().padStart(2, '0')}`);
         };
 
-        updateCountdown(); // Initial call
+        updateCountdown();
         const interval = setInterval(updateCountdown, 1000);
 
         return () => clearInterval(interval);
     }, [autoHitEnabled, neverStopEnabled, stopDuration, stopTimestamp]);
-
 
     const persistUnsavedCount = async (newCount: number) => {
         const today = new Date().toISOString().split('T')[0];
@@ -307,13 +291,13 @@ export default function Index() {
         Animated.sequence([
             Animated.spring(scaleAnim, {
                 toValue: 0.85,
-                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                useNativeDriver: Platform.OS !== 'web',
                 speed: 20,
                 bounciness: 10,
             }),
             Animated.spring(scaleAnim, {
                 toValue: 1,
-                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                useNativeDriver: Platform.OS !== 'web',
                 speed: 20,
                 bounciness: 10,
             }),
@@ -334,7 +318,6 @@ export default function Index() {
 
     }, [hapticsEnabled, soundEnabled, scaleAnim, playSound, prayWords]);
 
-
     const triggerSuccessAnimation = (savedValue: number) => {
         setSavedCount(savedValue);
         setShowSuccessModal(true);
@@ -346,19 +329,19 @@ export default function Index() {
                 Animated.timing(fadeAnim, {
                     toValue: 1,
                     duration: 300,
-                    useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                    useNativeDriver: Platform.OS !== 'web',
                 }),
                 Animated.spring(modalScaleAnim, {
                     toValue: 1,
                     friction: 4,
-                    useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                    useNativeDriver: Platform.OS !== 'web',
                 }),
             ]),
             Animated.delay(200),
             Animated.timing(fadeAnim, {
                 toValue: 0,
                 duration: 500,
-                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                useNativeDriver: Platform.OS !== 'web',
             }),
         ]).start(() => {
             setShowSuccessModal(false);
@@ -381,9 +364,8 @@ export default function Index() {
             todayData.hits.push({
                 timestamp: Date.now(),
                 count: count,
-                prayWords: prayWords !== '' ? prayWords : undefined, // ✅ Save only if non-empty
+                prayWords: prayWords !== '' ? prayWords : undefined,
             });
-
 
             allData[today] = todayData;
 
@@ -394,18 +376,15 @@ export default function Index() {
             setCount(0);
             await AsyncStorage.removeItem(UNSAVED_COUNT_STORAGE_KEY);
 
-
         } catch (e) {
             console.error('Failed to save hit count:', e);
             Alert.alert(
-                t('alert.saveErrorTitle'),           // localized title
-                t('alert.saveErrorMessage'),         // localized message
-                [{ text: t('common.ok'), onPress: () => { } }] // reuse localized OK button
+                t('alert.saveErrorTitle'),
+                t('alert.saveErrorMessage'),
+                [{ text: t('common.ok'), onPress: () => { } }]
             );
-
         }
     };
-
 
     useEffect(() => {
         if (!autoHitEnabled) {
@@ -416,7 +395,7 @@ export default function Index() {
             Animated.timing(slideAnim, {
                 toValue: 150,
                 duration: 300,
-                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                useNativeDriver: Platform.OS !== 'web',
             }).start();
             return;
         }
@@ -424,7 +403,6 @@ export default function Index() {
         const startTimer = () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
             intervalRef.current = setInterval(handleHit, frequency * 1000);
-            console.log('Auto-hit timer started.');
         };
 
         startTimer();
@@ -432,7 +410,7 @@ export default function Index() {
         Animated.timing(slideAnim, {
             toValue: 0,
             duration: 300,
-            useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+            useNativeDriver: Platform.OS !== 'web',
         }).start();
 
         const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -440,10 +418,8 @@ export default function Index() {
                 if (intervalRef.current) {
                     clearInterval(intervalRef.current);
                     intervalRef.current = null;
-                    console.log('App backgrounded: Auto-hit paused.');
                 }
             } else if (nextAppState === 'active') {
-                console.log('App foregrounded: Auto-hit resuming.');
                 startTimer();
             }
         });
@@ -457,9 +433,6 @@ export default function Index() {
         };
     }, [autoHitEnabled, frequency, handleHit]);
 
-
-
-
     const handlePressIn = () => {
         handleHit();
     };
@@ -467,7 +440,7 @@ export default function Index() {
     const handlePressOut = () => {
         Animated.spring(scaleAnim, {
             toValue: 1,
-            useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+            useNativeDriver: Platform.OS !== 'web',
             speed: 20,
             bounciness: 10,
         }).start();
@@ -485,12 +458,12 @@ export default function Index() {
                 await musicRef.current?.pauseAsync();
                 setIsMusicPlaying(false);
             } else {
-                setIsMusicLoading(true); // 👈 Start loading
+                setIsMusicLoading(true);
                 Animated.loop(
                     Animated.timing(rotateAnim, {
                         toValue: 1,
                         duration: 1000,
-                        useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                        useNativeDriver: Platform.OS !== 'web',
                         easing: Easing.linear,
                     })
                 ).start();
@@ -511,20 +484,17 @@ export default function Index() {
         } catch (e) {
             console.warn('Failed to toggle music:', e);
             Alert.alert(
-                t('alert.playbackErrorTitle'),         // localized title
-                t('alert.playbackErrorMessage'),       // localized message
-                [{ text: t('common.ok'), onPress: () => { } }] // localized OK button
+                t('alert.playbackErrorTitle'),
+                t('alert.playbackErrorMessage'),
+                [{ text: t('common.ok'), onPress: () => { } }]
             );
         } finally {
-            setIsMusicLoading(false); // 👈 Stop loading
+            setIsMusicLoading(false);
             rotateAnim.setValue(0);
-
         }
     };
 
-
     useEffect(() => {
-        // When music selection changes, stop and unload the current sound.
         if (musicRef.current) {
             musicRef.current.stopAsync();
             musicRef.current.unloadAsync();
@@ -532,7 +502,6 @@ export default function Index() {
         }
         setIsMusicPlaying(false);
 
-        // This is the component unmount cleanup function
         return () => {
             if (musicRef.current) {
                 musicRef.current.unloadAsync();
@@ -547,12 +516,12 @@ export default function Index() {
                     Animated.timing(bar, {
                         toValue: 1,
                         duration: 300 + i * 100,
-                        useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                        useNativeDriver: Platform.OS !== 'web',
                     }),
                     Animated.timing(bar, {
                         toValue: 0,
                         duration: 300 + i * 100,
-                        useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                        useNativeDriver: Platform.OS !== 'web',
                     }),
                 ])
             )
@@ -568,7 +537,6 @@ export default function Index() {
             waveBars.forEach(bar => bar.stopAnimation());
         };
     }, [isMusicPlaying]);
-
 
     useEffect(() => {
         const preloadMusic = async () => {
@@ -594,27 +562,24 @@ export default function Index() {
         };
     }, [selectedMusic]);
 
-
     const triggerPrayWordsAnimation = () => {
         prayWordsAnim.setValue(0);
         Animated.sequence([
             Animated.timing(prayWordsAnim, {
                 toValue: 1,
                 duration: 100,
-                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                useNativeDriver: Platform.OS !== 'web',
             }),
             Animated.delay(200),
             Animated.timing(prayWordsAnim, {
                 toValue: 2,
                 duration: 100,
-                useNativeDriver: Platform.OS !== 'web', // fallback to JS on web
+                useNativeDriver: Platform.OS !== 'web',
             }),
         ]).start(() => {
-            prayWordsAnim.setValue(0); // reset after animation
+            prayWordsAnim.setValue(0);
         });
     };
-
-
 
     return (
         <>
@@ -636,7 +601,6 @@ export default function Index() {
                             </View>
                         )}
 
-
                         <View style={[styles.switchContainer, { backgroundColor: bgColor }]}>
                             <Text style={styles.switchLabel}>{t('index.autoHitToggle')}</Text>
                             <Switch
@@ -656,7 +620,6 @@ export default function Index() {
                             <Feather name="pocket" size={18} color="#767577" />
                         </TouchableOpacity>
                     </View>
-
 
                     {showCounter && <Text style={[
                         styles.counterText, disarrayEnabled && {
@@ -689,7 +652,7 @@ export default function Index() {
                                         {
                                             translateY: prayWordsAnim.interpolate({
                                                 inputRange: [0, 1, 2],
-                                                outputRange: [0, 0, -40], // float upward
+                                                outputRange: [0, 0, -40],
                                             }),
                                         },
                                     ],
@@ -700,29 +663,28 @@ export default function Index() {
                         </Animated.Text>
                     )}
 
+                    {Platform.OS === 'web' ? (
+                        mounted && (
+                            <img
+                                src="/images/woodfish/muyu.png"
+                                style={{
+                                    width: width * 0.2,
+                                    height: width * 0.2,
+                                    marginTop: 20,
+                                    objectFit: 'contain',
+                                    transform: 'scale(1)',
+                                }}
+                                alt="muyu"
+                            />
+                        )
+                    ) : (
+                        <Animated.Image
+                            source={require('../../assets/images/woodfish/muyu-white.png')}
+                            style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
+                            resizeMode="contain"
+                        />
+                    )}
 
-
-{Platform.OS === 'web' ? (
-  <img
-    src="/images/woodfish/muyu.png"
-    style={{
-      width: width * 0.2,
-      height: width * 0.2,
-      marginTop: 20,
-      objectFit: 'contain',
-      transform: 'scale(1)',
-    }}
-    alt="muyu"
-  />
-) : (
-  <Animated.Image
-    source={require('../../assets/images/woodfish/muyu-white.png')}
-    style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
-    resizeMode="contain"
-  />
-)}
-
-                    {/*{(isMusicPlaying || showMusicButton) && (*/}
                     {true && (
                         <TouchableOpacity
                             style={[
@@ -783,8 +745,6 @@ export default function Index() {
                             ))}
                         </View>
                     )}
-
-
                 </View>
             </TouchableWithoutFeedback>
 
@@ -835,9 +795,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },
-        backgroundColor: 'rgba(255, 255, 255, 0.07)', // ✅ Soft overlay
+        backgroundColor: 'rgba(255, 255, 255, 0.07)',
     },
-
     saveButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -850,18 +809,18 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },
         marginTop: 8,
-        backgroundColor: 'rgba(255, 255, 255, 0.07)', // ✅ Soft overlay
+        backgroundColor: 'rgba(255, 255, 255, 0.07)',
     },
     switchLabel: {
         fontSize: 10,
-        color: '#F5F5DC', // ✅ Warm beige text
+        color: '#F5F5DC',
         marginRight: 4,
         fontWeight: '600',
     },
     counterText: {
         fontSize: width * 0.08,
         fontWeight: 'bold',
-        color: '#F5F5DC', // ✅ Matches switchLabel
+        color: '#F5F5DC',
     },
     switchStyle: {
         transform: [{ scale: 0.6 }],
@@ -871,7 +830,6 @@ const styles = StyleSheet.create({
         height: width * 0.2,
         marginTop: 20,
     },
-
     musicButton: {
         position: 'absolute',
         bottom: 30,
@@ -934,9 +892,8 @@ const styles = StyleSheet.create({
     prayWordsText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#F5F5DC', // Matches counterText and switchLabel
+        color: '#F5F5DC',
         marginTop: 10,
         textAlign: 'center',
     }
-
 });
