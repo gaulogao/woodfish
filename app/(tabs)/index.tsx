@@ -27,7 +27,7 @@ const STORAGE_KEY = 'daily_hits';
 const UNSAVED_COUNT_STORAGE_KEY = 'unsaved_hit_data';
 const imageSource =
   Platform.OS === 'web'
-    ? { uri: '/images/woodfish/muyu-white.png' }
+    ? { uri: '../../assets/images/muyu-white.png' }
     : require('../../assets/images/woodfish/muyu-white.png');
 // ✅ NEW: Map of music keys to their assets
 const musicMap = {
