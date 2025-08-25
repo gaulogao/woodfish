@@ -703,11 +703,25 @@ export default function Index() {
 
 
                     <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
-                        <Animated.Image
-                            source={imageSource}
-                            style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
-                            resizeMode="contain"
-                        />
+                        {Platform.OS === 'web' ? (
+  <img
+    src="/images/woodfish/muyu.png"
+    style={{
+      width: width * 0.2,
+      height: width * 0.2,
+      marginTop: 20,
+      objectFit: 'contain',
+      transform: `scale(${scaleAnim.__getValue?.() || 1})`,
+    }}
+    alt="muyu"
+  />
+) : (
+  <Animated.Image
+    source={require('../../assets/images/woodfish/muyu-white.png')}
+    style={[styles.woodfishImage, { transform: [{ scale: scaleAnim }] }]}
+    resizeMode="contain"
+  />
+)}
                     </TouchableWithoutFeedback>
 
                     {/*{(isMusicPlaying || showMusicButton) && (*/}
