@@ -40,7 +40,7 @@ export default function SettingsScreen() {
   const [bgColor, setBgColor] = useState('#000000');
   const [language, setLanguage] = useState('en');
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [hapticsEnabled, setHapticsEnabled] = useState(true);
+  const [hapticsEnabled, setHapticsEnabled] = useState(false);
   // Frequency state is no longer needed here
   const [disarrayEnabled, setDisarrayEnabled] = useState(false);
   const [showCounter, setshowCounter] = useState(true);
@@ -125,55 +125,63 @@ export default function SettingsScreen() {
   }, [bgColor, language, soundEnabled, hapticsEnabled, disarrayEnabled, showCounter, selectedMusic, prayWords, soundVolume]);
 
   const confirmReset = () => {
-    Alert.alert(
-      t('settings.resetConfirmationTitle'),
-      t('settings.resetConfirmationMessage'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.confirm'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const defaultSettings = {
-                bgColor: '#000000',
-                language: 'en',
-                soundEnabled: true, // Reset soundEnabled to true
-                hapticsEnabled: false, // Reset haptics to true
-                frequency: 1, // Reset frequency to its default
-                disarrayEnabled: false, // Reset disarray to false
-                showCounter: false, // Reset showCounter to true
-                selectedMusic: 'dabeizhou.mp3',
-                prayWords: '', // Reset prayWords
-                soundVolume: 1, // Reset sound volume to full
-              };
-              await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSettings));
-
-              // Update local state to reflect the reset
-              setBgColor(defaultSettings.bgColor);
-              setLanguage(defaultSettings.language);
-              setSoundEnabled(defaultSettings.soundEnabled);
-              setHapticsEnabled(defaultSettings.hapticsEnabled);
-              setDisarrayEnabled(defaultSettings.disarrayEnabled);
-              setshowCounter(defaultSettings.showCounter);
-              setSelectedMusic(defaultSettings.selectedMusic);
-              setprayWords('');
-              setSoundVolume(defaultSettings.soundVolume);
-
-              // Globally emit all reset settings
-              if (Platform.OS === 'web') {
-                window.dispatchEvent(new CustomEvent('settingsChanged', { detail: defaultSettings }));
-              } else {
-                DeviceEventEmitter.emit('settingsChanged', defaultSettings);
-              }
-              console.log('Data reset!');
-            } catch (e) {
-              console.warn('Failed to reset data', e);
-            }
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        t('settings.resetConfirmationMessage') || 'Are you sure you want to reset all settings?'
+      );
+      if (confirmed) {
+        handleReset();
+      }
+    } else {
+      Alert.alert(
+        t('settings.resetConfirmationTitle'),
+        t('settings.resetConfirmationMessage'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.confirm'),
+            style: 'destructive',
+            onPress: handleReset,
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      const defaultSettings = {
+        bgColor: '#000000',
+        language: 'en',
+        soundEnabled: true,
+        hapticsEnabled: false,
+        frequency: 1,
+        disarrayEnabled: false,
+        showCounter: false,
+        selectedMusic: 'dabeizhou.mp3',
+        prayWords: '',
+        soundVolume: 1,
+      };
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSettings));
+      setBgColor(defaultSettings.bgColor);
+      setLanguage(defaultSettings.language);
+      setSoundEnabled(defaultSettings.soundEnabled);
+      setHapticsEnabled(defaultSettings.hapticsEnabled);
+      setDisarrayEnabled(defaultSettings.disarrayEnabled);
+      setshowCounter(defaultSettings.showCounter);
+      setSelectedMusic(defaultSettings.selectedMusic);
+      setprayWords('');
+      setSoundVolume(defaultSettings.soundVolume);
+
+      if (Platform.OS === 'web') {
+        window.dispatchEvent(new CustomEvent('settingsChanged', { detail: defaultSettings }));
+      } else {
+        DeviceEventEmitter.emit('settingsChanged', defaultSettings);
+      }
+      console.log('Data reset!');
+    } catch (e) {
+      console.warn('Failed to reset data', e);
+    }
   };
 
   const toggleSection = (setter: React.Dispatch<React.SetStateAction<boolean>>) => {

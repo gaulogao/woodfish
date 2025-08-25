@@ -64,7 +64,7 @@ export default function Index() {
     const [bgColor, setBgColor] = useState('#000000');
     const [isMusicPlaying, setIsMusicPlaying] = useState(false);
     const [showMusicButton, setShowMusicButton] = useState(false);
-    const [showCounter, setShowCounter] = useState(false);
+    const [showCounter, setShowCounter] = useState(true);
     const [disarrayEnabled, setDisarrayEnabled] = useState(false);
     const [selectedMusic, setSelectedMusic] = useState('dabeizhou.mp3');
     const scaleAnim = useRef(new Animated.Value(1)).current;
