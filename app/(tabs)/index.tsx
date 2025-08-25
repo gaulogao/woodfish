@@ -139,20 +139,39 @@ export default function Index() {
     );
 
     useEffect(() => {
-        const subscription = DeviceEventEmitter.addListener('settingsChanged', (data) => {
-            if (data?.bgColor) setBgColor(data.bgColor);
-            if (typeof data?.soundEnabled === 'boolean') setSoundEnabled(data.soundEnabled);
-            if (typeof data?.hapticsEnabled === 'boolean') setHapticsEnabled(data.hapticsEnabled);
-            if (typeof data?.frequency === 'number') setFrequency(data.frequency);
-            if (typeof data?.showCounter === 'boolean') setShowCounter(data.showCounter);
-            if (typeof data?.disarrayEnabled === 'boolean') setDisarrayEnabled(data.disarrayEnabled);
-            if (data?.selectedMusic) setSelectedMusic(data.selectedMusic);
-            if (typeof data?.prayWords === 'string') setPrayWords(data.prayWords);
-            if (data.soundVolume !== undefined) {
-                setSoundVolume(data.soundVolume);
-            }
-        });
-        return () => subscription.remove();
+        if (Platform.OS === 'web') {
+            const handler = (e: any) => {
+                const data = e.detail;
+                if (data?.bgColor) setBgColor(data.bgColor);
+                if (typeof data?.soundEnabled === 'boolean') setSoundEnabled(data.soundEnabled);
+                if (typeof data?.hapticsEnabled === 'boolean') setHapticsEnabled(data.hapticsEnabled);
+                if (typeof data?.frequency === 'number') setFrequency(data.frequency);
+                if (typeof data?.showCounter === 'boolean') setShowCounter(data.showCounter);
+                if (typeof data?.disarrayEnabled === 'boolean') setDisarrayEnabled(data.disarrayEnabled);
+                if (data?.selectedMusic) setSelectedMusic(data.selectedMusic);
+                if (typeof data?.prayWords === 'string') setPrayWords(data.prayWords);
+                if (data.soundVolume !== undefined) {
+                    setSoundVolume(data.soundVolume);
+                }
+            };
+            window.addEventListener('settingsChanged', handler as EventListener);
+            return () => window.removeEventListener('settingsChanged', handler as EventListener);
+        } else {
+            const subscription = DeviceEventEmitter.addListener('settingsChanged', (data) => {
+                if (data?.bgColor) setBgColor(data.bgColor);
+                if (typeof data?.soundEnabled === 'boolean') setSoundEnabled(data.soundEnabled);
+                if (typeof data?.hapticsEnabled === 'boolean') setHapticsEnabled(data.hapticsEnabled);
+                if (typeof data?.frequency === 'number') setFrequency(data.frequency);
+                if (typeof data?.showCounter === 'boolean') setShowCounter(data.showCounter);
+                if (typeof data?.disarrayEnabled === 'boolean') setDisarrayEnabled(data.disarrayEnabled);
+                if (data?.selectedMusic) setSelectedMusic(data.selectedMusic);
+                if (typeof data?.prayWords === 'string') setPrayWords(data.prayWords);
+                if (data.soundVolume !== undefined) {
+                    setSoundVolume(data.soundVolume);
+                }
+            });
+            return () => subscription.remove();
+        }
     }, []);
 
     useFocusEffect(

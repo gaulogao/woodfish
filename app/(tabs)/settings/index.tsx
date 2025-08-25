@@ -161,7 +161,11 @@ export default function SettingsScreen() {
               setSoundVolume(defaultSettings.soundVolume);
 
               // Globally emit all reset settings
-              DeviceEventEmitter.emit('settingsChanged', defaultSettings);
+              if (Platform.OS === 'web') {
+                window.dispatchEvent(new CustomEvent('settingsChanged', { detail: defaultSettings }));
+              } else {
+                DeviceEventEmitter.emit('settingsChanged', defaultSettings);
+              }
               console.log('Data reset!');
             } catch (e) {
               console.warn('Failed to reset data', e);
@@ -173,9 +177,9 @@ export default function SettingsScreen() {
   };
 
   const toggleSection = (setter: React.Dispatch<React.SetStateAction<boolean>>) => {
-  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-  setTimeout(() => setter(prev => !prev), 100); // 👈 small delay helps on iOS
-};
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setTimeout(() => setter(prev => !prev), 100); // 👈 small delay helps on iOS
+  };
 
 
   const iconColor = "#4B3F38";
