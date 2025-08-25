@@ -6,44 +6,228 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/feather-icons"></script>
   <style>
-    body{margin:0;font-family:sans-serif;background:#000;color:#fff;text-align:center}
-    .woodfish{width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,#5c2d13,#2e160a);margin:20px auto;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer}
-    .counter{font-size:48px;margin:20px}
-    .jitter{animation:jitter 0.4s infinite alternate}
-    @keyframes jitter{from{transform:translateY(-1px)}to{transform:translateY(1px)}}
-    .btn{padding:10px 16px;margin:5px;border:none;border-radius:8px;cursor:pointer}
-    .btn-primary{background:#8B4513;color:#fff}
-    .btn-danger{background:#8B0000;color:#fff}
-    a{color:#ccc;text-decoration:none;display:block;margin-top:20px}
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+    }
+    .pray-words {
+      position: absolute;
+      top: 40px;
+      font-size: 20px;
+    }
+    .counter {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    .jitter {
+      animation: jitter 0.3s infinite alternate;
+    }
+    @keyframes jitter {
+      from { transform: translateY(-1px); }
+      to { transform: translateY(1px); }
+    }
+    .woodfish {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #8b4513, #3e1e0c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .auto-switch {
+      margin: 10px;
+    }
+    .music-btn {
+      position: absolute;
+      bottom: 80px;
+      background: #444;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    .save-btn {
+      position: absolute;
+      bottom: -60px;
+      background: #1e90ff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: bottom 0.4s ease;
+    }
+    .save-btn.visible {
+      bottom: 20px;
+    }
+    .settings-link {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #ccc;
+      text-decoration: none;
+      font-size: 18px;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script>
-    const {useState,useEffect,useRef} = React;
-    const STORAGE_KEY='@user_settings';
-    const defaultSettings={bgColor:'#000',language:'en',soundEnabled:true,hapticsEnabled:true,frequency:1,disarrayEnabled:false,showCounter:true,selectedMusic:'dabeizhou.mp3',prayWords:'',soundVolume:1,stopDuration:0,stopTimestamp:null};
-    function loadSettings(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?{...defaultSettings,...JSON.parse(raw)}:defaultSettings}catch(e){return defaultSettings}}
-    function saveSettings(p){localStorage.setItem(STORAGE_KEY,JSON.stringify(p))}
-    const MUSIC_TRACKS={'dabeizhou.mp3':"https://cdn.pixabay.com/download/audio/2022/03/15/audio_8e711a5f6d.mp3?filename=calm-meditation-110241.mp3",'guanshiyin.mp3':"https://cdn.pixabay.com/download/audio/2021/09/27/audio_6c50ccaa2a.mp3?filename=relaxing-meditation-10971.mp3"};
-    function useAudio(url,enabled,vol){const ref=useRef();useEffect(()=>{if(url){ref.current=new Audio(url);ref.current.loop=true}},[url]);useEffect(()=>{if(ref.current){ref.current.volume=vol}},[vol]);useEffect(()=>{if(!ref.current)return;if(enabled){ref.current.play().catch(()=>{})}else{ref.current.pause();ref.current.currentTime=0}},[enabled,url]);return ref}
-    function App(){const [settings,setSettings]=useState(loadSettings());const [count,setCount]=useState(Number(localStorage.getItem('count')||0));const [auto,setAuto]=useState(false);const timer=useRef();const startTime=useRef();
-      const player=useAudio(MUSIC_TRACKS[settings.selectedMusic],auto&&settings.soundEnabled,settings.soundVolume);
-      useEffect(()=>{document.body.style.background=settings.bgColor},[settings.bgColor]);
-      function hit(){setCount(c=>{localStorage.setItem('count',c+1);return c+1});if(settings.hapticsEnabled&&navigator.vibrate)navigator.vibrate(40)}
-      function startAuto(){startTime.current=Date.now();setAuto(true)}
-      function stopAuto(){setAuto(false);if(timer.current)clearInterval(timer.current)}
-      useEffect(()=>{if(!auto){if(timer.current)clearInterval(timer.current);return}hit();timer.current=setInterval(()=>{if(settings.stopDuration&&((Date.now()-startTime.current)/60000)>=settings.stopDuration)stopAuto();else if(settings.stopTimestamp&&Date.now()>=settings.stopTimestamp)stopAuto();else hit()},settings.frequency*1000);return()=>clearInterval(timer.current)},[auto,settings])
-      return React.createElement('div',null,
-        settings.prayWords&&React.createElement('div',null,settings.prayWords),
-        settings.showCounter&&React.createElement('div',{className:'counter'+(settings.disarrayEnabled?' jitter':'')},count),
-        React.createElement('div',{className:'woodfish',onClick:hit},'Hit'),
-        !auto?React.createElement('button',{className:'btn btn-primary',onClick:startAuto},'Auto Hit'):React.createElement('button',{className:'btn btn-danger',onClick:stopAuto},'Stop'),
-        React.createElement('a',{href:'settings.html'},'⚙️ Settings')
-      )}
-    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+    const { useState, useEffect, useRef } = React;
+
+    const STORAGE_KEY = "@user_settings";
+    const defaultSettings = {
+      bgColor: "#000",
+      language: "en",
+      soundEnabled: true,
+      hapticsEnabled: true,
+      frequency: 1,
+      disarrayEnabled: false,
+      showCounter: true,
+      selectedMusic: "dabeizhou.mp3",
+      prayWords: "",
+      soundVolume: 1,
+      stopDuration: 0,
+      stopTimestamp: null
+    };
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? { ...defaultSettings, ...JSON.parse(raw) } : defaultSettings;
+      } catch {
+        return defaultSettings;
+      }
+    }
+
+    function saveSettings(p) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+    }
+
+    const MUSIC_TRACKS = {
+      "dabeizhou.mp3": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_8e711a5f6d.mp3?filename=calm-meditation-110241.mp3",
+      "guanshiyin.mp3": "https://cdn.pixabay.com/download/audio/2021/09/27/audio_6c50ccaa2a.mp3?filename=relaxing-meditation-10971.mp3"
+    };
+
+    function useAudio(url, enabled, vol) {
+      const ref = useRef();
+      useEffect(() => {
+        if (url) {
+          ref.current = new Audio(url);
+          ref.current.loop = true;
+        }
+      }, [url]);
+      useEffect(() => {
+        if (ref.current) ref.current.volume = vol;
+      }, [vol]);
+      useEffect(() => {
+        if (!ref.current) return;
+        if (enabled) {
+          ref.current.play().catch(() => {});
+        } else {
+          ref.current.pause();
+          ref.current.currentTime = 0;
+        }
+      }, [enabled, url]);
+      return ref;
+    }
+
+    function App() {
+      const [settings, setSettings] = useState(loadSettings());
+      const [count, setCount] = useState(Number(localStorage.getItem("count") || 0));
+      const [auto, setAuto] = useState(false);
+      const [showSave, setShowSave] = useState(false);
+
+      const timer = useRef();
+      const startTime = useRef();
+
+      const player = useAudio(
+        MUSIC_TRACKS[settings.selectedMusic],
+        auto && settings.soundEnabled,
+        settings.soundVolume
+      );
+
+      useEffect(() => {
+        document.body.style.background = settings.bgColor;
+      }, [settings.bgColor]);
+
+      function hit() {
+        setCount(c => {
+          localStorage.setItem("count", c + 1);
+          return c + 1;
+        });
+        if (settings.hapticsEnabled && navigator.vibrate) navigator.vibrate(40);
+      }
+
+      function startAuto() {
+        startTime.current = Date.now();
+        setAuto(true);
+      }
+
+      function stopAuto() {
+        setAuto(false);
+        if (timer.current) clearInterval(timer.current);
+      }
+
+      useEffect(() => {
+        if (!auto) {
+          if (timer.current) clearInterval(timer.current);
+          return;
+        }
+        hit();
+        timer.current = setInterval(() => {
+          if (
+            settings.stopDuration &&
+            (Date.now() - startTime.current) / 60000 >= settings.stopDuration
+          )
+            stopAuto();
+          else if (settings.stopTimestamp && Date.now() >= settings.stopTimestamp)
+            stopAuto();
+          else hit();
+        }, settings.frequency * 1000);
+        return () => clearInterval(timer.current);
+      }, [auto, settings]);
+
+      function handleUserTouch() {
+        setShowSave(true);
+        setTimeout(() => setShowSave(false), 3000);
+      }
+
+      return (
+        React.createElement("div", { className: "container", onClick: handleUserTouch },
+          React.createElement("a", { href: "settings.html", className: "settings-link" }, "⚙️"),
+          settings.prayWords && React.createElement("div", { className: "pray-words" }, settings.prayWords),
+          settings.showCounter &&
+            React.createElement("div", { className: "counter" + (settings.disarrayEnabled ? " jitter" : "") }, count),
+          React.createElement("div", { className: "woodfish", onClick: e => { e.stopPropagation(); hit(); } }, "Woodfish"),
+          !auto
+            ? React.createElement("button", { className: "auto-switch", onClick: startAuto }, "▶ Auto-Hit")
+            : React.createElement("button", { className: "auto-switch", onClick: stopAuto }, "⏹ Stop"),
+          React.createElement("button", { className: "music-btn" }, "🎵 Music"),
+          React.createElement("button", { className: "save-btn" + (showSave ? " visible" : "") }, "💾 Save")
+        )
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
   </script>
 </body>
 </html>
