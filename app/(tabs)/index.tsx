@@ -26,9 +26,9 @@ const { width } = Dimensions.get('window');
 const STORAGE_KEY = 'daily_hits';
 const UNSAVED_COUNT_STORAGE_KEY = 'unsaved_hit_data';
 const imageSource =
-  Platform.OS === 'web'
-    ? { uri: '/images/woodfish/muyu.png' }
-    : require('../../assets/images/woodfish/muyu-white.png');
+    Platform.OS === 'web'
+        ? { uri: '/images/woodfish/muyu.png' }
+        : require('../../assets/images/woodfish/muyu-white.png');
 const musicMap = {
     'dabeizhou.mp3': 'https://lnlsolutions.s3.ap-southeast-1.amazonaws.com/woodfish/dabeizhou.mp3',
     'guanshiyin.mp3': 'https://lnlsolutions.s3.ap-southeast-1.amazonaws.com/woodfish/guanshiyin.mp3',
@@ -662,20 +662,29 @@ export default function Index() {
                             {prayWords}
                         </Animated.Text>
                     )}
-
                     {Platform.OS === 'web' ? (
                         mounted && (
-                            <img
-                                src="/images/woodfish/muyu.png"
+                            <div
                                 style={{
-                                    width: width * 0.2,
-                                    height: width * 0.2,
+                                    display: 'inline-block',
+                                    cursor: 'pointer',
                                     marginTop: 20,
-                                    objectFit: 'contain',
-                                    transform: 'scale(1)',
                                 }}
-                                alt="muyu"
-                            />
+                                onClick={handleHit}
+                            >
+                                <img
+                                    src="/images/woodfish/muyu.png"
+                                    style={{
+                                        width: width * 0.2,
+                                        height: width * 0.2,
+                                        objectFit: 'contain',
+                                        transform: `scale(${scaleAnim.__getValue?.() || 1})`,
+                                        transition: 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                                    }}
+                                    alt="muyu"
+                                    draggable={false}
+                                />
+                            </div>
                         )
                     ) : (
                         <Animated.Image
