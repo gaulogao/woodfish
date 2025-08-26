@@ -88,7 +88,22 @@ export default function Index() {
     const rotateAnim = useRef(new Animated.Value(0)).current;
     // --- Add this state for web scale ---
     const [webScale, setWebScale] = useState(1);
-
+    // Load AdSense script on web
+    useEffect(() => {
+        if (Platform.OS === 'web') {
+            if (!document.getElementById('adsbygoogle-js')) {
+                const script = document.createElement('script');
+                script.id = 'adsbygoogle-js';
+                script.async = true;
+                script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+                document.body.appendChild(script);
+            }
+            setTimeout(() => {
+                // @ts-ignore
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+            }, 500);
+        }
+    }, []);
     useEffect(() => {
         if (Platform.OS === 'web') {
             const id = scaleAnim.addListener(({ value }) => {
@@ -624,6 +639,17 @@ export default function Index() {
 
     return (
         <>
+            {/* Google Banner Ad at the top (web only) */}
+            {Platform.OS === 'web' && (
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                    <ins className="adsbygoogle"
+                        style={{ display: 'block', width: '100%', maxWidth: 728, height: 90 }}
+                        data-ad-client="ca-pub-3940256099942544"  // <-- Replace with your real client ID for production
+                        data-ad-slot="1234567890"                  // <-- Replace with your real slot ID for production
+                        data-ad-format="horizontal"
+                        data-full-width-responsive="true"></ins>
+                </div>
+            )}
             <TouchableWithoutFeedback
                 onPress={() => {
                     if (!isMusicPlaying) {
