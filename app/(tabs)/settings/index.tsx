@@ -41,7 +41,7 @@ export default function SettingsScreen() {
   const [language, setLanguage] = useState('en');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hapticsEnabled, setHapticsEnabled] = useState(false);
-  // Frequency state is no longer needed here
+  {/*// Frequency state is no longer needed here*/}
   const [disarrayEnabled, setDisarrayEnabled] = useState(false);
   const [showCounter, setshowCounter] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState('dabeizhou.mp3');
@@ -70,8 +70,8 @@ export default function SettingsScreen() {
   ];
 
   useEffect(() => {
-    // Load AdSense script when modal is shown
-    if (showAdModal && typeof window !== 'undefined') {
+    {/*// Load AdSense script when modal is shown*/}
+    if (Platform.OS === 'web' && showAdModal && typeof window !== 'undefined') {
       if (!document.getElementById('adsbygoogle-js')) {
         const script = document.createElement('script');
         script.id = 'adsbygoogle-js';
@@ -79,7 +79,7 @@ export default function SettingsScreen() {
         script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
         document.body.appendChild(script);
       }
-      // (Re)initialize ads
+      {/*// (Re)initialize ads*/}
       setTimeout(() => {
         // @ts-ignore
         (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -110,11 +110,11 @@ export default function SettingsScreen() {
     })();
   }, []);
 
-  // This effect saves all settings managed by this screen
+  {/*// This effect saves all settings managed by this screen*/}
   useEffect(() => {
     const saveSettings = async () => {
       try {
-        // Read existing settings to not overwrite frequency
+        {/*// Read existing settings to not overwrite frequency*/}
         const existing = await AsyncStorage.getItem(STORAGE_KEY);
         const existingSettings = existing ? JSON.parse(existing) : {};
 
@@ -211,7 +211,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
-     // In your return JSX, add this at the top:
+     {/*// In your return JSX, add this at the top:*/}
       {Platform.OS === 'web' && showAdModal && (
         <div style={{
           position: 'fixed',
@@ -435,13 +435,8 @@ export default function SettingsScreen() {
                   )}
                 />
               </View>
-
-
-
-
             </View>
           )}
-
 
           {/* Haptics Toggle */}
           <View style={styles.toggleRow}>

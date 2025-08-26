@@ -905,8 +905,8 @@ const styles = StyleSheet.create({
         transform: [{ scale: 0.6 }],
     },
     woodfishImage: {
-        width: width * 0.2,
-        height: width * 0.2,
+        width: width * 0.8,
+        height: width * 0.8,
         marginTop: 20,
     },
     musicButton: {
